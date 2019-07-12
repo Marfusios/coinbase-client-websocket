@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Coinbase.Client.Websocket.Channels;
 using Coinbase.Client.Websocket.Client;
 using Coinbase.Client.Websocket.Communicator;
+using Coinbase.Client.Websocket.Json;
 using Coinbase.Client.Websocket.Requests;
 using Newtonsoft.Json;
 using Serilog;
@@ -45,16 +46,18 @@ namespace Coinbase.Client.Websocket.Sample
             {
                 communicator.Name = "Coinbase-1";
                 communicator.ReconnectTimeoutMs = (int)TimeSpan.FromMinutes(1).TotalMilliseconds;
-                communicator.ReconnectionHappened.Subscribe(type =>
-                    Log.Information($"Reconnection happened, type: {type}"));
 
                 using (var client = new CoinbaseWebsocketClient(communicator))
                 {
                     SubscribeToStreams(client);
 
-                    communicator.Start().Wait();
+                    communicator.ReconnectionHappened.Subscribe(async type =>
+                    {
+                        Log.Information($"Reconnection happened, type: {type}, resubscribing..");
+                        await SendSubscriptionRequests(client);
+                    });
 
-                    SendSubscriptionRequests(client).Wait();
+                    communicator.Start().Wait();
 
                     ExitEvent.WaitOne();
                 }
@@ -78,9 +81,9 @@ namespace Coinbase.Client.Websocket.Sample
                 Channels = new[]
                 {
                     //ChannelSubscriptionType.Heartbeat,
-                    //ChannelSubscriptionType.Ticker,
-                    //ChannelSubscriptionType.Matches,
-                    ChannelSubscriptionType.Level2
+                    ChannelSubscriptionType.Ticker,
+                    ChannelSubscriptionType.Matches,
+                    //ChannelSubscriptionType.Level2
                 }
             };
 
@@ -95,7 +98,8 @@ namespace Coinbase.Client.Websocket.Sample
 
             client.Streams.SubscribeStream.Subscribe(x =>
             {
-                Log.Information($"Subscribed, channels: {JsonConvert.SerializeObject(x.Channels)}");
+                Log.Information($"Subscribed, " +
+                                $"channels: {JsonConvert.SerializeObject(x.Channels, CoinbaseJsonSerializer.Settings)}");
             });
 
             client.Streams.HeartbeatStream.Subscribe(x =>

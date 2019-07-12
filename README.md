@@ -28,19 +28,33 @@ using (var communicator = new CoinbaseWebsocketCommunicator(url))
 {
     using (var client = new CoinbaseWebsocketClient(communicator))
     {
-        client.Streams.InfoStream.Subscribe(info =>
+		client.Streams.TradesStream.Subscribe(x =>
         {
-            Console.WriteLine($"Info received, reconnection happened.");
-            client.Send(new PingRequest()).Wait();
+            Log.Information($"Trade executed [{x.ProductId}] {x.TradeSide} price: {x.Price} size: {x.Size}");
         });
 
-        client.Streams.PongStream.Subscribe(pong =>
+        communicator.ReconnectionHappened.Subscribe(async type =>
         {
-            Console.WriteLine($"Pong received!");
-            exitEvent.Set();
+            Log.Information($"Reconnection happened, type: {type}, resubscribing..");
+            var subscription = new SubscribeRequest
+            {
+                ProductIds = new[]
+                {
+                    "BTC-EUR",
+                    //"BTC-USD"
+                },
+                Channels = new[]
+                {
+                    ChannelSubscriptionType.Ticker,
+                    ChannelSubscriptionType.Matches,
+                    //ChannelSubscriptionType.Level2
+                }
+            };
+
+            await client.Send(subscription);
         });
 
-        await communicator.Start();
+        communicator.Start().Wait();
 
         exitEvent.WaitOne(TimeSpan.FromSeconds(30));
     }
@@ -56,43 +70,23 @@ More usage examples:
 
 | PUBLIC                 |    Covered     |  
 |------------------------|:--------------:|
-| Info                   |  ✔            |
-| Ping-Pong              |  ✔            |
+| Heartbeat              |  ✔            |
 | Errors                 |  ✔            |
 | Subscribe              |  ✔            |
 | Unsubscribe            |  ✔            |
-| Announcement           |                |
-| Chat                   |                |
-| Connected              |                |
-| Funding                |                |
-| Instrument             |  ✔            |
-| Insurance              |                |
-| Liquidation            |  ✔            |
 | Orderbook L2           |  ✔            |
-| Orderbook L10          |                |
-| Public notifications   |                |
-| Quote                  |  ✔            |
-| Quote bin 1m           |                |
-| Quote bin 5m           |                |
-| Quote bin 1h           |                |
-| Quote bin 1d           |                |
-| Settlement             |                |
-| Trade                  |  ✔            |
-| Trade bin 1m           |  ✔            |
-| Trade bin 5m           |  ✔            |
-| Trade bin 1h           |  ✔            |
-| Trade bin 1d           |  ✔            |
+| Trades (matches)       |  ✔            |
+| Ticker                 |  ✔            |
+| Status                 |                |
 
 | AUTHENTICATED          |    Covered     |  
 |------------------------|:--------------:|
-| Affilate               |                |
-| Execution              |  ✔             |
-| Order                  |  ✔            |
-| Margin                 |  ✔            |
-| Position               |  ✔            |
-| Private notifications  |                |
-| Transact               |                |
-| Wallet                 |  ✔            |
+| Received               |                |
+| Open                   |                |
+| Done                   |                |
+| Match                  |                |
+| Change                 |                |
+| Activate               |                |
 
 **Pull Requests are welcome!**
 
@@ -107,6 +101,12 @@ More usage examples:
 <a href="https://github.com/Marfusios/crypto-websocket-extensions">Extensions</a>
 <br />
 <span>All order books together, etc.</span>
+</td>
+
+<td>
+<a href="https://github.com/Marfusios/bitmex-client-websocket"><img src="https://user-images.githubusercontent.com/1294454/27766319-f653c6e6-5ed4-11e7-933d-f0bc3699ae8f.jpg"></a>
+<br />
+<a href="https://github.com/Marfusios/bitmex-client-websocket">Bitmex</a>
 </td>
 
 <td>
