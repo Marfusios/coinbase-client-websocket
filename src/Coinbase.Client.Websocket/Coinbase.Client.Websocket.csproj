@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>Coinbase.Client.Websocket</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Mariusz Kotas</Authors>
+    <Description>Client for Coinbase Pro websocket API</Description>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>Initial release</PackageReleaseNotes>
+    <Copyright>Copyright 2019 Mariusz Kotas. All rights reserved.</Copyright>
+    <PackageTags>Coinbase Pro websockets websocket client cryptocurrency exchange bitcoin</PackageTags>
+    <PackageLicenseUrl>https://github.com/Marfusios/coinbase-client-websocket/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Marfusios/coinbase-client-websocket</PackageProjectUrl>
+    <PackageIconUrl>https://www.coinbase.com/assets/mobile/store_listing_icon-ffbf3ec7c91090dd1f403464fad41560dac96ce04b7d86e7a459ea09c6522c18.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/Marfusios/coinbase-client-websocket</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile> 
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="LibLog" Version="5.0.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="System.Reactive" Version="4.0.0" />
+    <PackageReference Include="Websocket.Client" Version="3.0.17" />
+  </ItemGroup>
+</Project>
