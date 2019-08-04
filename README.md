@@ -28,7 +28,7 @@ using (var communicator = new CoinbaseWebsocketCommunicator(url))
 {
     using (var client = new CoinbaseWebsocketClient(communicator))
     {
-		client.Streams.TradesStream.Subscribe(x =>
+        client.Streams.TradesStream.Subscribe(x =>
         {
             Log.Information($"Trade executed [{x.ProductId}] {x.TradeSide} price: {x.Price} size: {x.Size}");
         });
