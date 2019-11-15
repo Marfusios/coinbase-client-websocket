@@ -18,6 +18,11 @@ namespace Coinbase.Client.Websocket.Channels
         Subscriptions,
 
         /// <summary>
+        /// Status channel 
+        /// </summary>
+        Status,
+
+        /// <summary>
         /// Heartbeat/ping-pong channel
         /// </summary>
         Heartbeat,

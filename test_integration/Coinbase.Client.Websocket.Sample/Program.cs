@@ -75,14 +75,15 @@ namespace Coinbase.Client.Websocket.Sample
             {
                 ProductIds = new[]
                 {
-                    "BTC-EUR",
+                    "BTC-GBP",
                     //"BTC-USD"
                 },
                 Channels = new[]
                 {
                     //ChannelSubscriptionType.Heartbeat,
-                    ChannelSubscriptionType.Ticker,
-                    ChannelSubscriptionType.Matches,
+                    //ChannelSubscriptionType.Ticker,
+                    //ChannelSubscriptionType.Matches,
+                    ChannelSubscriptionType.Status
                     //ChannelSubscriptionType.Level2
                 }
             };
@@ -95,7 +96,6 @@ namespace Coinbase.Client.Websocket.Sample
             client.Streams.ErrorStream.Subscribe(x =>
                 Log.Warning($"Error received, message: {x.Message}"));
 
-
             client.Streams.SubscribeStream.Subscribe(x =>
             {
                 Log.Information($"Subscribed, " +
@@ -105,6 +105,11 @@ namespace Coinbase.Client.Websocket.Sample
             client.Streams.HeartbeatStream.Subscribe(x =>
                 Log.Information($"Heartbeat received, product: {x.ProductId}, seq: {x.Sequence}, time: {x.Time}"));
 
+            client.Streams.StatusStream.Subscribe(x =>
+            {
+                Log.Information($"Status, " +
+                                $"channels: {JsonConvert.SerializeObject(x.Currencies, CoinbaseJsonSerializer.Settings)}");
+            });
 
             client.Streams.TickerStream.Subscribe(x =>
                     Log.Information($"Ticker {x.ProductId}. Bid: {x.BestBid} Ask: {x.BestAsk} Last size: {x.LastSize}, Price: {x.Price}")
