@@ -5,7 +5,6 @@ namespace Coinbase.Client.Websocket.Utils
 {
     public static class CoinbaseAuthentication
     {
-
         public static long CreateAuthNonce(long? time = null)
         {
             var timeSafe = time ?? UnixTime.NowMs();
@@ -27,16 +26,13 @@ namespace Coinbase.Client.Websocket.Utils
             {
                 var builder = new StringBuilder();
 
-                for (var i = 0; i < buff.Length; i++)
-                {
-                    builder.Append(buff[i].ToString("X2")); // hex format
-                }
+                for (var i = 0; i < buff.Length; i++) builder.Append(buff[i].ToString("X2")); // hex format
                 return builder.ToString();
             }
 
             using (var hmacsha256 = new HMACSHA256(keyBytes))
             {
-                byte[] hashmessage = hmacsha256.ComputeHash(messageBytes);
+                var hashmessage = hmacsha256.ComputeHash(messageBytes);
                 return ByteToString(hashmessage).ToLower();
             }
         }

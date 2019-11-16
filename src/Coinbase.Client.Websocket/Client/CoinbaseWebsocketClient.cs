@@ -15,9 +15,9 @@ using Websocket.Client;
 namespace Coinbase.Client.Websocket.Client
 {
     /// <summary>
-    /// Coinbase websocket client.
-    /// Use method `Send()` to subscribe to channels.
-    /// And `Streams` to subscribe. 
+    ///     Coinbase websocket client.
+    ///     Use method `Send()` to subscribe to channels.
+    ///     And `Streams` to subscribe.
     /// </summary>
     public class CoinbaseWebsocketClient : IDisposable
     {
@@ -36,12 +36,12 @@ namespace Coinbase.Client.Websocket.Client
         }
 
         /// <summary>
-        /// Provided message streams
+        ///     Provided message streams
         /// </summary>
         public CoinbaseClientStreams Streams { get; } = new CoinbaseClientStreams();
 
         /// <summary>
-        /// Cleanup everything
+        ///     Cleanup everything
         /// </summary>
         public void Dispose()
         {
@@ -49,17 +49,17 @@ namespace Coinbase.Client.Websocket.Client
         }
 
         /// <summary>
-        /// Serializes request and sends message via websocket communicator. 
-        /// It logs and re-throws every exception. 
+        ///     Serializes request and sends message via websocket communicator.
+        ///     It logs and re-throws every exception.
         /// </summary>
         /// <param name="request">Request/message to be sent</param>
-        public async Task Send<T>(T request) where T: RequestBase
+        public async Task Send<T>(T request) where T : RequestBase
         {
             try
             {
                 ConValidations.ValidateInput(request, nameof(request));
 
-                var serialized = 
+                var serialized =
                     CoinbaseJsonSerializer.Serialize(request);
                 await _communicator.Send(serialized).ConfigureAwait(false);
             }
@@ -119,17 +119,14 @@ namespace Coinbase.Client.Websocket.Client
             // ********************
 
             return
-
                 HeartbeatResponse.TryHandle(response, Streams.HeartbeatSubject) ||
                 TradeResponse.TryHandle(response, Streams.TradesSubject) ||
                 OrderBookUpdateResponse.TryHandle(response, Streams.OrderBookUpdateSubject) ||
                 OrderBookSnapshotResponse.TryHandle(response, Streams.OrderBookSnapshotSubject) ||
                 TickerResponse.TryHandle(response, Streams.TickerSubject) ||
-
                 ErrorResponse.TryHandle(response, Streams.ErrorSubject) ||
                 SubscribeResponse.TryHandle(response, Streams.SubscribeSubject) ||
                 StatusResponse.TryHandle(response, Streams.StatusSubject) ||
-
                 false;
         }
     }

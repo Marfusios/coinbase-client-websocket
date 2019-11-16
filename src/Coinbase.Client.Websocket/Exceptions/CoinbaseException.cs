@@ -3,7 +3,7 @@
 namespace Coinbase.Client.Websocket.Exceptions
 {
     /// <summary>
-    /// Base Coinbase exception
+    ///     Base Coinbase exception
     /// </summary>
     public class CoinbaseException : Exception
     {

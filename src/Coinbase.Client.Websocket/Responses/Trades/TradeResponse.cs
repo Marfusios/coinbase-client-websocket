@@ -21,54 +21,54 @@ namespace Coinbase.Client.Websocket.Responses.Trades
      */
 
     /// <summary>
-    /// Executed trade response
+    ///     Executed trade response
     /// </summary>
     public class TradeResponse : ResponseBase
     {
         /// <summary>
-        /// Last executed trade id
+        ///     Last executed trade id
         /// </summary>
         [JsonProperty("trade_id")]
         public long TradeId { get; set; }
 
         /// <summary>
-        /// Reference to maker order (that was sitting on the order book)
+        ///     Reference to maker order (that was sitting on the order book)
         /// </summary>
         [JsonProperty("maker_order_id")]
         public string MakerOrderId { get; set; }
 
         /// <summary>
-        /// Reference to taker order (aggressor, taking liquidity)
+        ///     Reference to taker order (aggressor, taking liquidity)
         /// </summary>
         [JsonProperty("taker_order_id")]
         public string TakerOrderId { get; set; }
 
         /// <summary>
-        /// Target product id
+        ///     Target product id
         /// </summary>
         [JsonProperty("product_id")]
         public string ProductId { get; set; }
 
         /// <summary>
-        /// Trade price
+        ///     Trade price
         /// </summary>
         public double Price { get; set; }
 
         /// <summary>
-        /// Trade size
+        ///     Trade size
         /// </summary>
         public double Size { get; set; }
 
         /// <summary>
-        /// The side field indicates the maker order side.
-        /// If the side is sell this indicates the maker was a sell order and the match is considered an up-tick.
-        /// A buy side match is a down-tick.
+        ///     The side field indicates the maker order side.
+        ///     If the side is sell this indicates the maker was a sell order and the match is considered an up-tick.
+        ///     A buy side match is a down-tick.
         /// </summary>
         [JsonProperty("side")]
         public TradeSide MakerOrderSide { get; set; }
 
         /// <summary>
-        /// Trade side (from taker point of view)
+        ///     Trade side (from taker point of view)
         /// </summary>
         public TradeSide TradeSide => MakerOrderSide == TradeSide.Undefined ? TradeSide.Undefined :
             MakerOrderSide == TradeSide.Buy ? TradeSide.Sell : TradeSide.Buy;
@@ -77,11 +77,8 @@ namespace Coinbase.Client.Websocket.Responses.Trades
         internal static bool TryHandle(JObject response, ISubject<TradeResponse> subject)
         {
             var type = response?["type"].Value<string>();
-            if (type != "match" && type != "last_match")
-            {
-                return false;
-            }
-            
+            if (type != "match" && type != "last_match") return false;
+
             var parsed = response.ToObject<TradeResponse>(CoinbaseJsonSerializer.Serializer);
             subject.OnNext(parsed);
             return true;

@@ -1,7 +1,7 @@
 ﻿namespace Coinbase.Client.Websocket.Responses.Books
 {
     /// <summary>
-    /// Order book side
+    ///     Order book side
     /// </summary>
     public enum OrderBookSide
     {

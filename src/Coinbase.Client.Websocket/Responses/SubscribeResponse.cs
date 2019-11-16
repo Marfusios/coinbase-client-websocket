@@ -6,12 +6,12 @@ using Newtonsoft.Json.Linq;
 namespace Coinbase.Client.Websocket.Responses
 {
     /// <summary>
-    /// Response for every subscribe and unsubscribe event
+    ///     Response for every subscribe and unsubscribe event
     /// </summary>
     public class SubscribeResponse : ResponseBase
     {
         /// <summary>
-        /// Information about subscribed channels
+        ///     Information about subscribed channels
         /// </summary>
         public Channel[] Channels { get; set; }
 

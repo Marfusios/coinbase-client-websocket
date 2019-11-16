@@ -5,12 +5,12 @@ using System.Runtime.Serialization;
 namespace Coinbase.Client.Websocket.Utils
 {
     /// <summary>
-    /// Utility to get name from the enum type
+    ///     Utility to get name from the enum type
     /// </summary>
     public static class EnumUtility
     {
         /// <summary>
-        /// Returns string representation of enum type
+        ///     Returns string representation of enum type
         /// </summary>
         public static string GetStringValue(this Enum e)
         {
@@ -19,7 +19,7 @@ namespace Coinbase.Client.Websocket.Utils
 
         public static T GetAttribute<T>(this Enum e) where T : Attribute
         {
-            return (T)e.GetType().GetFields().First(x => x.Name == e.ToString()).GetCustomAttributes(typeof(T), true)
+            return (T) e.GetType().GetFields().First(x => x.Name == e.ToString()).GetCustomAttributes(typeof(T), true)
                 .First();
         }
 
@@ -29,19 +29,17 @@ namespace Coinbase.Client.Websocket.Utils
 
             foreach (var fieldInfo in fields)
             {
-                var stringValueAttribute = (EnumMemberAttribute)fieldInfo.GetCustomAttributes(typeof(EnumMemberAttribute), true).FirstOrDefault();
+                var stringValueAttribute =
+                    (EnumMemberAttribute) fieldInfo.GetCustomAttributes(typeof(EnumMemberAttribute), true)
+                        .FirstOrDefault();
 
                 if (stringValueAttribute != null)
                 {
-
-                    if (stringValueAttribute.Value == expected)
-                    {
-                        return (T) fieldInfo.GetValue(t);
-                    }
+                    if (stringValueAttribute.Value == expected) return (T) fieldInfo.GetValue(t);
                 }
             }
 
-            return default(T);
+            return default;
         }
     }
 }

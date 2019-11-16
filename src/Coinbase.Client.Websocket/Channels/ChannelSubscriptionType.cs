@@ -1,38 +1,38 @@
 ﻿namespace Coinbase.Client.Websocket.Channels
 {
     /// <summary>
-    /// Unique subscription type for channel
+    ///     Unique subscription type for channel
     /// </summary>
     public enum ChannelSubscriptionType
     {
         /// <summary>
-        /// Subscribe request type
+        ///     Subscribe request type
         /// </summary>
         Subscribe,
 
         /// <summary>
-        /// The status channel will send all products and currencies on a preset interval.
+        ///     The status channel will send all products and currencies on a preset interval.
         /// </summary>
         Status,
 
         /// <summary>
-        /// Heartbeat/ping-pong subscription
+        ///     Heartbeat/ping-pong subscription
         /// </summary>
         Heartbeat,
 
         /// <summary>
-        /// Ticker/quotes subscription
+        ///     Ticker/quotes subscription
         /// </summary>
         Ticker,
 
         /// <summary>
-        /// Order book subscription (snapshot + updates stream)
+        ///     Order book subscription (snapshot + updates stream)
         /// </summary>
         Level2,
 
         /// <summary>
-        /// Trades subscription
+        ///     Trades subscription
         /// </summary>
-        Matches,
+        Matches
     }
 }

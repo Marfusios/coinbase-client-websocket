@@ -22,74 +22,65 @@ namespace Coinbase.Client.Websocket.Responses.Tickers
      */
 
     /// <summary>
-    /// 
     /// </summary>
     public class TickerResponse : ResponseBase
     {
         /// <summary>
-        /// Target product id
+        ///     Target product id
         /// </summary>
         [JsonProperty("product_id")]
         public string ProductId { get; set; }
 
         /// <summary>
-        /// Last trade price
+        ///     Last trade price
         /// </summary>
         public double Price { get; set; }
 
         /// <summary>
-        /// Last trade taker side
+        ///     Last trade taker side
         /// </summary>
         public TradeSide Side { get; set; }
 
         /// <summary>
-        /// Last executed trade id
+        ///     Last executed trade id
         /// </summary>
         [JsonProperty("trade_id")]
         public long TradeId { get; set; }
 
         /// <summary>
-        /// Last trade size
+        ///     Last trade size
         /// </summary>
         [JsonProperty("last_size")]
         public double LastSize { get; set; }
 
         /// <summary>
-        /// Current best bid price
+        ///     Current best bid price
         /// </summary>
         [JsonProperty("best_bid")]
         public double BestBid { get; set; }
 
         /// <summary>
-        /// Current best ask price
+        ///     Current best ask price
         /// </summary>
         [JsonProperty("best_ask")]
         public double BestAsk { get; set; }
 
 
-        [JsonProperty("open_24h")]
-        public double Open24H { get; set; }
+        [JsonProperty("open_24h")] public double Open24H { get; set; }
 
-        [JsonProperty("volume_24h")]
-        public double Volume24H { get; set; }
+        [JsonProperty("volume_24h")] public double Volume24H { get; set; }
 
-        [JsonProperty("low_24h")]
-        public double Low24H { get; set; }
+        [JsonProperty("low_24h")] public double Low24H { get; set; }
 
-        [JsonProperty("high_24h")]
-        public double High24H { get; set; }
+        [JsonProperty("high_24h")] public double High24H { get; set; }
 
-        [JsonProperty("volume_30d")]
-        public double Volume30D { get; set; }
+        [JsonProperty("volume_30d")] public double Volume30D { get; set; }
 
 
         internal static bool TryHandle(JObject response, ISubject<TickerResponse> subject)
         {
-            if (response?["type"].Value<string>() != "ticker")
-            {
-                return false;
-            }
-            
+            if (response?["type"].Value<string>() != "ticker") return false;
+
             var parsed = response.ToObject<TickerResponse>(CoinbaseJsonSerializer.Serializer);
             subject.OnNext(parsed);
             return true;

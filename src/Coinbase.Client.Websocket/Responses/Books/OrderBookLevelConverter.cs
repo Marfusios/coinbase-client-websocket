@@ -12,13 +12,14 @@ namespace Coinbase.Client.Websocket.Responses.Books
 
         public OrderBookLevelConverter()
         {
-            
         }
 
         public OrderBookLevelConverter(OrderBookSide side)
         {
             _side = side;
         }
+
+        public override bool CanWrite => false;
 
         public override bool CanConvert(Type objectType)
         {
@@ -31,8 +32,6 @@ namespace Coinbase.Client.Websocket.Responses.Books
             var array = JArray.Load(reader);
             return JArrayToTradingTicker(array);
         }
-
-        public override bool CanWrite => false;
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
@@ -57,7 +56,7 @@ namespace Coinbase.Client.Websocket.Responses.Books
                 else
                 {
                     var side = (string) array[0];
-                    level.Side = string.IsNullOrWhiteSpace(side) ? OrderBookSide.Undefined : 
+                    level.Side = string.IsNullOrWhiteSpace(side) ? OrderBookSide.Undefined :
                         side == "buy" ? OrderBookSide.Buy : OrderBookSide.Sell;
                     level.Price = (double) array[1];
                     level.Amount = (double) array[2];

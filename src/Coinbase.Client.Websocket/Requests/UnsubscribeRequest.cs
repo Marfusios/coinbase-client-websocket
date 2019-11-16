@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace Coinbase.Client.Websocket.Requests
 {
     /// <summary>
-    /// Subscribe request
+    ///     Subscribe request
     /// </summary>
     public class UnsubscribeRequest : RequestBase
     {
@@ -30,24 +30,24 @@ namespace Coinbase.Client.Websocket.Requests
         public override string Type => "unsubscribe";
 
         /// <summary>
-        /// Target products/pairs.
-        /// Example:
-        /// "ETH-USD", "ETH-EUR"
+        ///     Target products/pairs.
+        ///     Example:
+        ///     "ETH-USD", "ETH-EUR"
         /// </summary>
         [JsonProperty("product_ids")]
         public string[] ProductIds { get; set; }
 
         /// <summary>
-        /// Target channels.
-        /// Could be simple string as "level2", "heartbeat".
-        /// Or complex object, example:
-        /// {
-        ///   "name": "ticker",
-        ///   "product_ids": [
+        ///     Target channels.
+        ///     Could be simple string as "level2", "heartbeat".
+        ///     Or complex object, example:
+        ///     {
+        ///     "name": "ticker",
+        ///     "product_ids": [
         ///     "ETH-BTC",
         ///     "ETH-USD"
-        ///   ]
-        /// }
+        ///     ]
+        ///     }
         /// </summary>
         public object Channels { get; set; }
     }

@@ -9,7 +9,7 @@ namespace Coinbase.Client.Websocket.Utils
         public static long NowMs()
         {
             var substracted = DateTime.UtcNow.Subtract(UnixBase);
-            return (long)substracted.TotalMilliseconds;
+            return (long) substracted.TotalMilliseconds;
         }
 
         public static long NowTicks()

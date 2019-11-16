@@ -3,47 +3,47 @@
 namespace Coinbase.Client.Websocket.Channels
 {
     /// <summary>
-    /// Unique message type
+    ///     Unique message type
     /// </summary>
     public enum ChannelType
     {
         /// <summary>
-        /// Unknown channel, most likely unimplemented, contact library developer
+        ///     Unknown channel, most likely unimplemented, contact library developer
         /// </summary>
         Unknown = 0,
 
         /// <summary>
-        /// Subscribed info channel
+        ///     Subscribed info channel
         /// </summary>
         Subscriptions,
 
         /// <summary>
-        /// Status channel 
+        ///     Status channel
         /// </summary>
         Status,
 
         /// <summary>
-        /// Heartbeat/ping-pong channel
+        ///     Heartbeat/ping-pong channel
         /// </summary>
         Heartbeat,
 
         /// <summary>
-        /// Ticker/quotes channel
+        ///     Ticker/quotes channel
         /// </summary>
         Ticker,
 
         /// <summary>
-        /// Order book level 2 channel
+        ///     Order book level 2 channel
         /// </summary>
         Level2,
 
         /// <summary>
-        /// Order book snapshot channel 
+        ///     Order book snapshot channel
         /// </summary>
         Snapshot,
 
         /// <summary>
-        /// Order book diff/updates channel
+        ///     Order book diff/updates channel
         /// </summary>
         L2Update,
 
@@ -52,23 +52,22 @@ namespace Coinbase.Client.Websocket.Channels
         Done,
 
         /// <summary>
-        /// Trades channel
+        ///     Trades channel
         /// </summary>
         Match,
 
         /// <summary>
-        /// Trades subscription
+        ///     Trades subscription
         /// </summary>
         Matches,
 
-        [EnumMember(Value = "last_match")]
-        LastMatch,
+        [EnumMember(Value = "last_match")] LastMatch,
 
         Change,
         Activate,
 
         /// <summary>
-        /// Server error channel
+        ///     Server error channel
         /// </summary>
         Error
     }
