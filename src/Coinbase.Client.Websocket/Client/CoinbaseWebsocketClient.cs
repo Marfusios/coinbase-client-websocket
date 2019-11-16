@@ -128,7 +128,8 @@ namespace Coinbase.Client.Websocket.Client
 
                 ErrorResponse.TryHandle(response, Streams.ErrorSubject) ||
                 SubscribeResponse.TryHandle(response, Streams.SubscribeSubject) ||
-                
+                StatusResponse.TryHandle(response, Streams.StatusSubject) ||
+
                 false;
         }
     }
