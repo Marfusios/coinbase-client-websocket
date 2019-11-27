@@ -72,7 +72,7 @@ namespace Coinbase.Client.Websocket.Client
 
         private string L(string msg)
         {
-            return $"[BMX WEBSOCKET CLIENT] {msg}";
+            return $"[COINBASE PRO WEBSOCKET CLIENT] {msg}";
         }
 
         private void HandleMessage(ResponseMessage message)
