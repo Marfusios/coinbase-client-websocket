@@ -53,7 +53,7 @@ namespace Coinbase.Client.Websocket.Client
         /// It logs and re-throws every exception. 
         /// </summary>
         /// <param name="request">Request/message to be sent</param>
-        public async Task Send<T>(T request) where T: RequestBase
+        public void Send<T>(T request) where T: RequestBase
         {
             try
             {
@@ -61,7 +61,7 @@ namespace Coinbase.Client.Websocket.Client
 
                 var serialized = 
                     CoinbaseJsonSerializer.Serialize(request);
-                await _communicator.Send(serialized).ConfigureAwait(false);
+                _communicator.Send(serialized);
             }
             catch (Exception e)
             {

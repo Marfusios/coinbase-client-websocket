@@ -45,7 +45,7 @@ namespace Coinbase.Client.Websocket.Sample
             using (var communicator = new CoinbaseWebsocketCommunicator(url))
             {
                 communicator.Name = "Coinbase-1";
-                communicator.ReconnectTimeoutMs = (int)TimeSpan.FromMinutes(1).TotalMilliseconds;
+                communicator.ReconnectTimeout = TimeSpan.FromMinutes(1);
 
                 using (var client = new CoinbaseWebsocketClient(communicator))
                 {
@@ -87,7 +87,7 @@ namespace Coinbase.Client.Websocket.Sample
                 }
             };
 
-            await client.Send(subscription);
+            client.Send(subscription);
         }
 
         private static void SubscribeToStreams(CoinbaseWebsocketClient client)

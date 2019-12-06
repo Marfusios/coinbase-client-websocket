@@ -51,7 +51,7 @@ using (var communicator = new CoinbaseWebsocketCommunicator(url))
                 }
             };
 
-            await client.Send(subscription);
+            client.Send(subscription);
         });
 
         communicator.Start().Wait();
