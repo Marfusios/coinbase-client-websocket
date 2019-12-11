@@ -1,7 +1,7 @@
-﻿using System.Reactive.Subjects;
-using Coinbase.Client.Websocket.Channels;
+﻿using Coinbase.Client.Websocket.Channels;
 using Coinbase.Client.Websocket.Json;
 using Newtonsoft.Json.Linq;
+using System.Reactive.Subjects;
 
 namespace Coinbase.Client.Websocket.Responses
 {
@@ -18,7 +18,9 @@ namespace Coinbase.Client.Websocket.Responses
         internal static bool TryHandle(JObject response, ISubject<SubscribeResponse> subject)
         {
             if (response?["type"].Value<string>() != "subscriptions")
+            {
                 return false;
+            }
 
             var parsed = response.ToObject<SubscribeResponse>(CoinbaseJsonSerializer.Serializer);
             subject.OnNext(parsed);

@@ -1,10 +1,10 @@
-﻿using System;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using Coinbase.Client.Websocket.Responses;
+﻿using Coinbase.Client.Websocket.Responses;
 using Coinbase.Client.Websocket.Responses.Books;
 using Coinbase.Client.Websocket.Responses.Tickers;
 using Coinbase.Client.Websocket.Responses.Trades;
+using System;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 namespace Coinbase.Client.Websocket.Client
 {

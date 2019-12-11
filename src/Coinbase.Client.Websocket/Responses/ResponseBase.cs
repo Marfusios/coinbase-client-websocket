@@ -1,5 +1,5 @@
-﻿using System;
-using Coinbase.Client.Websocket.Channels;
+﻿using Coinbase.Client.Websocket.Channels;
+using System;
 
 namespace Coinbase.Client.Websocket.Responses
 {

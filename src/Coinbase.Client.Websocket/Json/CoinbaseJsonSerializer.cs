@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System.Collections.Generic;
 
 namespace Coinbase.Client.Websocket.Json
 {
@@ -16,7 +16,7 @@ namespace Coinbase.Client.Websocket.Json
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             Formatting = Formatting.None,
-            Converters = new List<JsonConverter> {new CoinbaseStringEnumConverter {CamelCaseText = true}},
+            Converters = new List<JsonConverter> { new CoinbaseStringEnumConverter { CamelCaseText = true } },
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
 

@@ -1,7 +1,7 @@
-﻿using System.Reactive.Subjects;
-using Coinbase.Client.Websocket.Json;
+﻿using Coinbase.Client.Websocket.Json;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Reactive.Subjects;
 
 namespace Coinbase.Client.Websocket.Responses.Trades
 {
@@ -77,7 +77,10 @@ namespace Coinbase.Client.Websocket.Responses.Trades
         internal static bool TryHandle(JObject response, ISubject<TradeResponse> subject)
         {
             var type = response?["type"].Value<string>();
-            if (type != "match" && type != "last_match") return false;
+            if (type != "match" && type != "last_match")
+            {
+                return false;
+            }
 
             var parsed = response.ToObject<TradeResponse>(CoinbaseJsonSerializer.Serializer);
             subject.OnNext(parsed);

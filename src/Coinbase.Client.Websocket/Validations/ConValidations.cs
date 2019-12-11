@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Coinbase.Client.Websocket.Exceptions;
+using System.Collections.Generic;
 using System.Linq;
-using Coinbase.Client.Websocket.Exceptions;
 
 namespace Coinbase.Client.Websocket.Validations
 {
@@ -14,8 +14,10 @@ namespace Coinbase.Client.Websocket.Validations
         public static void ValidateInput(string value, string name)
         {
             if (string.IsNullOrWhiteSpace(value))
+            {
                 throw new CoinbaseBadInputException(
                     $"Input string parameter '{name}' is null or empty. Please correct it.");
+            }
         }
 
         /// <summary>
@@ -26,7 +28,9 @@ namespace Coinbase.Client.Websocket.Validations
         public static void ValidateInput<T>(T value, string name)
         {
             if (Equals(value, default(T)))
+            {
                 throw new CoinbaseBadInputException($"Input parameter '{name}' is null. Please correct it.");
+            }
         }
 
         /// <summary>
@@ -41,7 +45,9 @@ namespace Coinbase.Client.Websocket.Validations
 
             // ReSharper disable once PossibleMultipleEnumeration
             if (!collection.Any())
+            {
                 throw new CoinbaseBadInputException($"Input collection '{name}' is empty. Please correct it.");
+            }
         }
 
         /// <summary>
@@ -55,11 +61,16 @@ namespace Coinbase.Client.Websocket.Validations
             int maxValue = int.MaxValue)
         {
             if (value < minValue)
+            {
                 throw new CoinbaseBadInputException(
                     $"Input parameter '{name}' is lower than {minValue}. Please correct it.");
+            }
+
             if (value > maxValue)
+            {
                 throw new CoinbaseBadInputException(
                     $"Input parameter '{name}' is higher than {maxValue}. Please correct it.");
+            }
         }
 
         /// <summary>
@@ -73,11 +84,16 @@ namespace Coinbase.Client.Websocket.Validations
             long maxValue = long.MaxValue)
         {
             if (value < minValue)
+            {
                 throw new CoinbaseBadInputException(
                     $"Input parameter '{name}' is lower than {minValue}. Please correct it.");
+            }
+
             if (value > maxValue)
+            {
                 throw new CoinbaseBadInputException(
                     $"Input parameter '{name}' is higher than {maxValue}. Please correct it.");
+            }
         }
 
         /// <summary>
@@ -91,11 +107,16 @@ namespace Coinbase.Client.Websocket.Validations
             double maxValue = double.MaxValue)
         {
             if (value < minValue)
+            {
                 throw new CoinbaseBadInputException(
                     $"Input parameter '{name}' is lower than {minValue}. Please correct it.");
+            }
+
             if (value > maxValue)
+            {
                 throw new CoinbaseBadInputException(
                     $"Input parameter '{name}' is higher than {maxValue}. Please correct it.");
+            }
         }
     }
 }

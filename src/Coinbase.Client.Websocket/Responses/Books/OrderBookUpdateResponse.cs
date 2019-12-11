@@ -1,7 +1,7 @@
-﻿using System.Reactive.Subjects;
-using Coinbase.Client.Websocket.Json;
+﻿using Coinbase.Client.Websocket.Json;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Reactive.Subjects;
 
 namespace Coinbase.Client.Websocket.Responses.Books
 {
@@ -27,7 +27,10 @@ namespace Coinbase.Client.Websocket.Responses.Books
         internal static bool TryHandle(JObject response, ISubject<OrderBookUpdateResponse> subject)
         {
             var type = response?["type"].Value<string>();
-            if (type != "l2update") return false;
+            if (type != "l2update")
+            {
+                return false;
+            }
 
             var parsed = response.ToObject<OrderBookUpdateResponse>(CoinbaseJsonSerializer.Serializer);
             subject.OnNext(parsed);

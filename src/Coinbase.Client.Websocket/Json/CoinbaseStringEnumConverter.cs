@@ -1,7 +1,7 @@
-﻿using System;
-using Coinbase.Client.Websocket.Logging;
+﻿using Coinbase.Client.Websocket.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
 
 namespace Coinbase.Client.Websocket.Json
 {

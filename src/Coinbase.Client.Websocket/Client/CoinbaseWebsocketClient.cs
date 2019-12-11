@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Coinbase.Client.Websocket.Communicator;
+﻿using Coinbase.Client.Websocket.Communicator;
 using Coinbase.Client.Websocket.Json;
 using Coinbase.Client.Websocket.Logging;
 using Coinbase.Client.Websocket.Requests;
@@ -10,6 +8,8 @@ using Coinbase.Client.Websocket.Responses.Tickers;
 using Coinbase.Client.Websocket.Responses.Trades;
 using Coinbase.Client.Websocket.Validations;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Threading.Tasks;
 using Websocket.Client;
 
 namespace Coinbase.Client.Websocket.Client
@@ -61,7 +61,7 @@ namespace Coinbase.Client.Websocket.Client
 
                 var serialized =
                     CoinbaseJsonSerializer.Serialize(request);
-                await _communicator.Send(serialized).ConfigureAwait(false);
+                _communicator.Send(serialized);
             }
             catch (Exception e)
             {
@@ -86,12 +86,16 @@ namespace Coinbase.Client.Websocket.Client
                 {
                     handled = HandleObjectMessage(messageSafe);
                     if (handled)
+                    {
                         return;
+                    }
                 }
 
                 handled = HandleRawMessage(messageSafe);
                 if (handled)
+                {
                     return;
+                }
 
                 Log.Warn(L($"Unhandled response:  '{messageSafe}'"));
             }
