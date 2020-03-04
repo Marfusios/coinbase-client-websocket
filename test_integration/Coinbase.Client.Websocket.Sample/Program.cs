@@ -20,12 +20,12 @@ namespace Coinbase.Client.Websocket.Sample
     {
         private static readonly ManualResetEvent ExitEvent = new ManualResetEvent(false);
 
-        private static readonly string API_KEY = "9128cff9e6fa2a9c77507441f93077e7";
+        private static readonly string API_KEY = "xx";
 
         private static readonly string API_SECRET =
-            "tfF/Vo22THIN3Jmq1Ejw4j5fkySMLMeEHUn7KHQRg6w6YD0zh4Na1wiRHVkMyZJFI/R0ZuVWh/QbDYwtlhSyYw==";
+            "xx";
 
-        private static readonly string PASSPHRASE = "xlr9v5h0bj";
+        private static readonly string PASSPHRASE = "xxx";
 
         private static void Main(string[] args)
         {
