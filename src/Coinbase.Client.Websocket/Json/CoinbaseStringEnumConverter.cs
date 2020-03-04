@@ -1,12 +1,12 @@
-﻿using Coinbase.Client.Websocket.Logging;
+﻿using System;
+using Coinbase.Client.Websocket.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using System;
 
 namespace Coinbase.Client.Websocket.Json
 {
     /// <summary>
-    ///     Extended StringEnumConverter to use first value ('Unknown') as default and log unexpected type
+    /// Extended StringEnumConverter to use first value ('Unknown') as default and log unexpected type
     /// </summary>
     public class CoinbaseStringEnumConverter : StringEnumConverter
     {

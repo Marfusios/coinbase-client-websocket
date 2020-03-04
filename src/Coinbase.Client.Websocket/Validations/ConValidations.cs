@@ -1,13 +1,13 @@
-﻿using Coinbase.Client.Websocket.Exceptions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Coinbase.Client.Websocket.Exceptions;
 
 namespace Coinbase.Client.Websocket.Validations
 {
     internal static class ConValidations
     {
         /// <summary>
-        ///     It throws <exception cref="CoinbaseBadInputException"></exception> if value is null or empty/white spaces
+        /// It throws <exception cref="CoinbaseBadInputException"></exception> if value is null or empty/white spaces
         /// </summary>
         /// <param name="value">The value to be validated</param>
         /// <param name="name">Input parameter name</param>
@@ -21,20 +21,18 @@ namespace Coinbase.Client.Websocket.Validations
         }
 
         /// <summary>
-        ///     It throws <exception cref="CoinbaseBadInputException"></exception> if value is null
+        /// It throws <exception cref="CoinbaseBadInputException"></exception> if value is null
         /// </summary>
         /// <param name="value">The value to be validated</param>
         /// <param name="name">Input parameter name</param>
         public static void ValidateInput<T>(T value, string name)
         {
             if (Equals(value, default(T)))
-            {
                 throw new CoinbaseBadInputException($"Input parameter '{name}' is null. Please correct it.");
-            }
         }
 
         /// <summary>
-        ///     It throws <exception cref="CoinbaseBadInputException"></exception> if collection is null or collection is empty
+        /// It throws <exception cref="CoinbaseBadInputException"></exception> if collection is null or collection is empty
         /// </summary>
         /// <param name="collection">The collection to be validated</param>
         /// <param name="name">Input parameter name</param>
@@ -45,13 +43,11 @@ namespace Coinbase.Client.Websocket.Validations
 
             // ReSharper disable once PossibleMultipleEnumeration
             if (!collection.Any())
-            {
                 throw new CoinbaseBadInputException($"Input collection '{name}' is empty. Please correct it.");
-            }
         }
 
         /// <summary>
-        ///     It throws <exception cref="CoinbaseBadInputException"></exception> if value is not in specified range
+        /// It throws <exception cref="CoinbaseBadInputException"></exception> if value is not in specified range
         /// </summary>
         /// <param name="value">The value to be validated</param>
         /// <param name="name">Input parameter name</param>
@@ -74,7 +70,7 @@ namespace Coinbase.Client.Websocket.Validations
         }
 
         /// <summary>
-        ///     It throws <exception cref="CoinbaseBadInputException"></exception> if value is not in specified range
+        /// It throws <exception cref="CoinbaseBadInputException"></exception> if value is not in specified range
         /// </summary>
         /// <param name="value">The value to be validated</param>
         /// <param name="name">Input parameter name</param>
@@ -97,7 +93,7 @@ namespace Coinbase.Client.Websocket.Validations
         }
 
         /// <summary>
-        ///     It throws <exception cref="CoinbaseBadInputException"></exception> if value is not in specified range
+        /// It throws <exception cref="CoinbaseBadInputException"></exception> if value is not in specified range
         /// </summary>
         /// <param name="value">The value to be validated</param>
         /// <param name="name">Input parameter name</param>

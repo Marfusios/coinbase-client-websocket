@@ -1,10 +1,10 @@
-﻿using Coinbase.Client.Websocket.Json;
+﻿using System;
+using System.Globalization;
+using System.Reactive.Subjects;
+using Coinbase.Client.Websocket.Json;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Globalization;
-using System.Reactive.Subjects;
 
 namespace Coinbase.Client.Websocket.Responses
 {
@@ -17,10 +17,7 @@ namespace Coinbase.Client.Websocket.Responses
 
         internal static bool TryHandle(JObject response, ISubject<StatusResponse> subject)
         {
-            if (response?["type"].Value<string>() != "status")
-            {
-                return false;
-            }
+            if (response?["type"].Value<string>() != "status") return false;
 
             var parsed = response.ToObject<StatusResponse>(CoinbaseJsonSerializer.Serializer);
             subject.OnNext(parsed);
@@ -176,10 +173,7 @@ namespace Coinbase.Client.Websocket.Responses
 
         public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
         {
-            if (reader.TokenType == JsonToken.Null)
-            {
-                return null;
-            }
+            if (reader.TokenType == JsonToken.Null) return null;
 
             var value = serializer.Deserialize<string>(reader);
             switch (value)
@@ -211,7 +205,7 @@ namespace Coinbase.Client.Websocket.Responses
                 return;
             }
 
-            var value = (QuoteCurrency)untypedValue;
+            var value = (QuoteCurrency) untypedValue;
             switch (value)
             {
                 case QuoteCurrency.Btc:
@@ -252,10 +246,7 @@ namespace Coinbase.Client.Websocket.Responses
 
         public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
         {
-            if (reader.TokenType == JsonToken.Null)
-            {
-                return null;
-            }
+            if (reader.TokenType == JsonToken.Null) return null;
 
             var value = serializer.Deserialize<string>(reader);
             switch (value)
@@ -277,7 +268,7 @@ namespace Coinbase.Client.Websocket.Responses
                 return;
             }
 
-            var value = (DetailsType)untypedValue;
+            var value = (DetailsType) untypedValue;
             switch (value)
             {
                 case DetailsType.Crypto:
@@ -303,16 +294,10 @@ namespace Coinbase.Client.Websocket.Responses
 
         public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
         {
-            if (reader.TokenType == JsonToken.Null)
-            {
-                return null;
-            }
+            if (reader.TokenType == JsonToken.Null) return null;
 
             var value = serializer.Deserialize<string>(reader);
-            if (value == "online")
-            {
-                return Status.Online;
-            }
+            if (value == "online") return Status.Online;
 
             throw new Exception("Cannot unmarshal type Status");
         }
@@ -325,7 +310,7 @@ namespace Coinbase.Client.Websocket.Responses
                 return;
             }
 
-            var value = (Status)untypedValue;
+            var value = (Status) untypedValue;
             if (value == Status.Online)
             {
                 serializer.Serialize(writer, "online");
@@ -347,16 +332,10 @@ namespace Coinbase.Client.Websocket.Responses
 
         public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
         {
-            if (reader.TokenType == JsonToken.Null)
-            {
-                return null;
-            }
+            if (reader.TokenType == JsonToken.Null) return null;
 
             var value = serializer.Deserialize<string>(reader);
-            if (long.TryParse(value, out long l))
-            {
-                return l;
-            }
+            if (long.TryParse(value, out var l)) return l;
 
             throw new Exception("Cannot unmarshal type long");
         }
@@ -369,7 +348,7 @@ namespace Coinbase.Client.Websocket.Responses
                 return;
             }
 
-            var value = (long)untypedValue;
+            var value = (long) untypedValue;
             serializer.Serialize(writer, value.ToString());
         }
     }
@@ -385,16 +364,10 @@ namespace Coinbase.Client.Websocket.Responses
 
         public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
         {
-            if (reader.TokenType == JsonToken.Null)
-            {
-                return null;
-            }
+            if (reader.TokenType == JsonToken.Null) return null;
 
             var value = serializer.Deserialize<string>(reader);
-            if (value == "spot")
-            {
-                return ProductType.Spot;
-            }
+            if (value == "spot") return ProductType.Spot;
 
             throw new Exception("Cannot unmarshal type ProductType");
         }
@@ -407,7 +380,7 @@ namespace Coinbase.Client.Websocket.Responses
                 return;
             }
 
-            var value = (ProductType)untypedValue;
+            var value = (ProductType) untypedValue;
             if (value == ProductType.Spot)
             {
                 serializer.Serialize(writer, "spot");

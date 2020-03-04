@@ -3,7 +3,7 @@
 namespace Coinbase.Client.Websocket.Exceptions
 {
     /// <summary>
-    ///     Exception that indicates bad user input
+    /// Exception that indicates bad user input
     /// </summary>
     public class CoinbaseBadInputException : CoinbaseException
     {

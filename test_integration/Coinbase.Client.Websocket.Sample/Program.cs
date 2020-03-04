@@ -9,20 +9,25 @@ using Coinbase.Client.Websocket.Client;
 using Coinbase.Client.Websocket.Communicator;
 using Coinbase.Client.Websocket.Json;
 using Coinbase.Client.Websocket.Requests;
+using Coinbase.Client.Websocket.Utils;
 using Newtonsoft.Json;
 using Serilog;
 using Serilog.Events;
 
 namespace Coinbase.Client.Websocket.Sample
 {
-    class Program
+    internal class Program
     {
         private static readonly ManualResetEvent ExitEvent = new ManualResetEvent(false);
 
-        private static readonly string API_KEY = "your api key";
-        private static readonly string API_SECRET = "";
+        private static readonly string API_KEY = "9128cff9e6fa2a9c77507441f93077e7";
 
-        static void Main(string[] args)
+        private static readonly string API_SECRET =
+            "tfF/Vo22THIN3Jmq1Ejw4j5fkySMLMeEHUn7KHQRg6w6YD0zh4Na1wiRHVkMyZJFI/R0ZuVWh/QbDYwtlhSyYw==";
+
+        private static readonly string PASSPHRASE = "xlr9v5h0bj";
+
+        private static void Main(string[] args)
         {
             InitLogging();
 
@@ -38,14 +43,13 @@ namespace Coinbase.Client.Websocket.Sample
             Log.Debug("====================================");
             Log.Debug("              STARTING              ");
             Log.Debug("====================================");
-           
 
 
             var url = CoinbaseValues.ApiWebsocketUrl;
             using (var communicator = new CoinbaseWebsocketCommunicator(url))
             {
                 communicator.Name = "Coinbase-1";
-                communicator.ReconnectTimeoutMs = (int)TimeSpan.FromMinutes(1).TotalMilliseconds;
+                communicator.ReconnectTimeout = TimeSpan.FromMinutes(1);
 
                 using (var client = new CoinbaseWebsocketClient(communicator))
                 {
@@ -71,22 +75,28 @@ namespace Coinbase.Client.Websocket.Sample
 
         private static async Task SendSubscriptionRequests(CoinbaseWebsocketClient client)
         {
-            var subscription = new SubscribeRequest
+            var productIds = new string[]
             {
-                ProductIds = new[]
-                {
-                    "BTC-GBP",
-                    //"BTC-USD"
-                },
-                Channels = new[]
-                {
-                    //ChannelSubscriptionType.Heartbeat,
-                    //ChannelSubscriptionType.Ticker,
-                    //ChannelSubscriptionType.Matches,
-                    ChannelSubscriptionType.Status
-                    //ChannelSubscriptionType.Level2
-                }
+                "BTC-GBP"
+                //"BTC-USD"
             };
+
+            var channels = new[]
+            {
+                //ChannelSubscriptionType.Heartbeat,
+                //ChannelSubscriptionType.Ticker,
+                //ChannelSubscriptionType.Matches,
+                //ChannelSubscriptionType.Status,
+                //ChannelSubscriptionType.Level2
+                ChannelSubscriptionType.User
+            };
+            
+            var authenticator = new CoinbaseAuthentication(API_KEY, API_SECRET, PASSPHRASE);
+
+            var subscription = new SubscribeRequest(
+                productIds,
+                channels,
+                authenticator);
 
             await client.Send(subscription);
         }
@@ -95,41 +105,40 @@ namespace Coinbase.Client.Websocket.Sample
         {
             client.Streams.ErrorStream.Subscribe(x =>
                 Log.Warning($"Error received, message: {x.Message}"));
-
             client.Streams.SubscribeStream.Subscribe(x =>
             {
-                Log.Information($"Subscribed, " +
+                Log.Information("Subscribed, " +
                                 $"channels: {JsonConvert.SerializeObject(x.Channels, CoinbaseJsonSerializer.Settings)}");
             });
-
             client.Streams.HeartbeatStream.Subscribe(x =>
                 Log.Information($"Heartbeat received, product: {x.ProductId}, seq: {x.Sequence}, time: {x.Time}"));
-
             client.Streams.StatusStream.Subscribe(x =>
             {
-                Log.Information($"Status, " +
+                Log.Information("Status, " +
                                 $"channels: {JsonConvert.SerializeObject(x.Currencies, CoinbaseJsonSerializer.Settings)}");
             });
-
             client.Streams.TickerStream.Subscribe(x =>
-                    Log.Information($"Ticker {x.ProductId}. Bid: {x.BestBid} Ask: {x.BestAsk} Last size: {x.LastSize}, Price: {x.Price}")
-                );
-
+                Log.Information(
+                    $"Ticker {x.ProductId}. Bid: {x.BestBid} Ask: {x.BestAsk} Last size: {x.LastSize}, Price: {x.Price}"
+                )
+            );
             client.Streams.TradesStream.Subscribe(x =>
             {
                 Log.Information($"Trade executed [{x.ProductId}] {x.TradeSide} price: {x.Price} size: {x.Size}");
             });
-
             client.Streams.OrderBookSnapshotStream.Subscribe(x =>
             {
                 Log.Information($"OB snapshot [{x.ProductId}] bids: {x.Bids.Length}, asks: {x.Asks.Length}");
             });
-
             client.Streams.OrderBookUpdateStream.Subscribe(x =>
             {
                 Log.Information($"OB updates [{x.ProductId}] changes: {x.Changes.Length}");
             });
-            
+            client.Streams.OrderStream.Subscribe(x =>
+            {
+                Log.Information($"Order updates [{x.ProductId}] {x.Amount} {x.Side} {x.Price}");
+            });
+
             // example of unsubscribe requests
             //Task.Run(async () =>
             //{

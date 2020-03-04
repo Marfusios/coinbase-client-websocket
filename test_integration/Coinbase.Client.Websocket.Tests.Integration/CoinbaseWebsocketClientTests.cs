@@ -26,7 +26,6 @@ namespace Coinbase.Client.Websocket.Tests.Integration
 
                 using (var client = new CoinbaseWebsocketClient(communicator))
                 {
-
                     client.Streams.HeartbeatStream.Subscribe(pong =>
                     {
                         received = pong;
@@ -35,7 +34,7 @@ namespace Coinbase.Client.Websocket.Tests.Integration
 
                     await communicator.Start();
 
-                    await client.Send(new SubscribeRequest(new []{"BTC-EUR"}, ChannelSubscriptionType.Heartbeat));
+                    await client.Send(new SubscribeRequest(new[] {"BTC-EUR"}, ChannelSubscriptionType.Heartbeat));
 
                     receivedEvent.WaitOne(TimeSpan.FromSeconds(30));
 
@@ -43,6 +42,5 @@ namespace Coinbase.Client.Websocket.Tests.Integration
                 }
             }
         }
-
     }
 }

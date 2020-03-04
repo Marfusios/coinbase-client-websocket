@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Coinbase.Client.Websocket.Responses.Books
 {
@@ -50,16 +50,16 @@ namespace Coinbase.Client.Websocket.Responses.Books
                 if (array.Length == 2)
                 {
                     level.Side = _side;
-                    level.Price = (double)array[0];
-                    level.Amount = (double)array[1];
+                    level.Price = (double) array[0];
+                    level.Amount = (double) array[1];
                 }
                 else
                 {
-                    var side = (string)array[0];
+                    var side = (string) array[0];
                     level.Side = string.IsNullOrWhiteSpace(side) ? OrderBookSide.Undefined :
                         side == "buy" ? OrderBookSide.Buy : OrderBookSide.Sell;
-                    level.Price = (double)array[1];
-                    level.Amount = (double)array[2];
+                    level.Price = (double) array[1];
+                    level.Amount = (double) array[2];
                 }
 
                 result.Add(level);
