@@ -27,7 +27,7 @@ namespace Coinbase.Client.Websocket.Responses.Orders
             var request =
                 await CoinbaseHttpClient.SendHttpRequest(authentication, apiKey, apiSecret, passphrase, "/orders");
             var orders = OrderResponse.FromJson(request);
-            
+
             var snapshot = new OrdersSnapshotResponse();
             snapshot.Orders = orders;
             snapshot.Type = ChannelType.OrdersSnapshot;
@@ -35,26 +35,29 @@ namespace Coinbase.Client.Websocket.Responses.Orders
             var serialized = JsonConvert.SerializeObject(snapshot, CoinbaseJsonSerializer.Settings);
             communicator.StreamFakeMessage(ResponseMessage.TextMessage(serialized));
         }
-        
+
         internal static bool TryHandle(JObject response, ISubject<OrdersSnapshotResponse> subject)
         {
             if (response?["type"].Value<string>() != "ordersSnapshot") return false;
             var parsed = response.ToObject<OrdersSnapshotResponse>(CoinbaseJsonSerializer.Serializer);
             subject.OnNext(parsed);
             return true;
-
         }
     }
 
     public partial class OrdersSnapshotResponse
     {
-        public static OrdersSnapshotResponse FromJson(string json) =>
-            JsonConvert.DeserializeObject<OrdersSnapshotResponse>(json, CoinbaseJsonSerializer.Settings);
+        public static OrdersSnapshotResponse FromJson(string json)
+        {
+            return JsonConvert.DeserializeObject<OrdersSnapshotResponse>(json, CoinbaseJsonSerializer.Settings);
+        }
     }
 
     public static partial class Serialize
     {
-        public static string ToJson(this OrdersSnapshotResponse self) =>
-            JsonConvert.SerializeObject(self, CoinbaseJsonSerializer.Settings);
+        public static string ToJson(this OrdersSnapshotResponse self)
+        {
+            return JsonConvert.SerializeObject(self, CoinbaseJsonSerializer.Settings);
+        }
     }
 }

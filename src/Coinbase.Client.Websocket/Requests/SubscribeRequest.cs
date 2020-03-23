@@ -29,7 +29,8 @@ namespace Coinbase.Client.Websocket.Requests
         }
 
         /// <inheritdoc />
-        public SubscribeRequest(string[] products, ChannelSubscriptionType[] channels, ICoinbaseAuthenticaton authenticaton)
+        public SubscribeRequest(string[] products, ChannelSubscriptionType[] channels,
+            ICoinbaseAuthenticaton authenticaton)
         {
             ProductIds = products;
             Channels = channels;
@@ -39,7 +40,8 @@ namespace Coinbase.Client.Websocket.Requests
             Timestamp = authenticaton.NowS();
             Key = authenticaton.ApiKey;
             Passphrase = authenticaton.Passphrase;
-            Signature = authenticaton.CreateSignature(HttpMethod.Get, authenticaton.UnsignedSignature, Timestamp, "/users/self/verify");
+            Signature = authenticaton.CreateSignature(HttpMethod.Get, authenticaton.UnsignedSignature, Timestamp,
+                "/users/self/verify");
         }
 
         /// <inheritdoc />

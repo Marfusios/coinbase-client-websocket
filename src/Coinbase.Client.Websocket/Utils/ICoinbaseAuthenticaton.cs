@@ -20,12 +20,12 @@ namespace Coinbase.Client.Websocket.Utils
         /// <param name="contentBody"></param>
         /// <returns></returns>
         string CreateSignature(
-            HttpMethod httpMethod, 
-            string secret, 
-            decimal timestamp, 
-            string requestUri, 
+            HttpMethod httpMethod,
+            string secret,
+            decimal timestamp,
+            string requestUri,
             string contentBody = "");
-        
+
         /// <summary>
         /// Get timestamp in seconds
         /// </summary>

@@ -25,7 +25,7 @@ namespace Coinbase.Client.Websocket.Responses.Orders
 
         public long? Gid { get; set; }
 
-        [JsonProperty("orderType")] 
+        [JsonProperty("orderType")]
         [JsonConverter(typeof(StringEnumConverter))]
         public OrderType OrderType { get; set; }
 
@@ -117,13 +117,17 @@ namespace Coinbase.Client.Websocket.Responses.Orders
 
     public partial class OrderResponse
     {
-        public static OrderResponse[] FromJson(string json) =>
-            JsonConvert.DeserializeObject<OrderResponse[]>(json, CoinbaseJsonSerializer.Settings);
+        public static OrderResponse[] FromJson(string json)
+        {
+            return JsonConvert.DeserializeObject<OrderResponse[]>(json, CoinbaseJsonSerializer.Settings);
+        }
     }
 
     public static partial class Serialize
     {
-        public static string ToJson(this OrderResponse[] self) =>
-            JsonConvert.SerializeObject(self, CoinbaseJsonSerializer.Settings);
+        public static string ToJson(this OrderResponse[] self)
+        {
+            return JsonConvert.SerializeObject(self, CoinbaseJsonSerializer.Settings);
+        }
     }
 }

@@ -50,7 +50,8 @@ namespace Coinbase.Client.Websocket.Utils
             return (long) substracted.TotalSeconds;
         }
 
-        public string CreateSignature(HttpMethod httpMethod, string secret, decimal timestamp, string requestUri, string contentBody = "")
+        public string CreateSignature(HttpMethod httpMethod, string secret, decimal timestamp, string requestUri,
+            string contentBody = "")
         {
             var convertedString = Convert.FromBase64String(secret);
             var prehash = timestamp.ToString("F0", CultureInfo.InvariantCulture) + httpMethod.ToString().ToUpper() +
@@ -97,6 +98,4 @@ namespace Coinbase.Client.Websocket.Utils
             }
         }*/
     }
-
-    
 }

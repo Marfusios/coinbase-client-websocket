@@ -11,13 +11,14 @@ namespace Coinbase.Client.Websocket.Network
     public class CoinbaseHttpClient
     {
         private readonly ICoinbaseAuthenticaton authentication;
-        public static async Task<string> SendHttpRequest(ICoinbaseAuthenticaton authentication, 
+
+        public static async Task<string> SendHttpRequest(ICoinbaseAuthenticaton authentication,
             string apiKey,
             string apiSecret,
             string passphrase, string endPoint)
         {
             var timestamp = authentication.NowS();
-            var signature = authentication.CreateSignature(HttpMethod.Get,apiSecret, timestamp, endPoint);
+            var signature = authentication.CreateSignature(HttpMethod.Get, apiSecret, timestamp, endPoint);
 
             var client = new HttpClient();
             var contentBody = "";
@@ -28,18 +29,17 @@ namespace Coinbase.Client.Websocket.Network
                     ? null
                     : new StringContent(contentBody, Encoding.UTF8, "application/json")
             };
-            
+
             requestMessage.Headers.Add("User-Agent", "CoinbaseClientWebsocket");
             requestMessage.Headers.Add("CB-ACCESS-KEY", apiKey);
             requestMessage.Headers.Add("CB-ACCESS-TIMESTAMP",
                 timestamp.ToString("F0", CultureInfo.InvariantCulture));
             requestMessage.Headers.Add("CB-ACCESS-SIGN", signature);
             requestMessage.Headers.Add("CB-ACCESS-PASSPHRASE", passphrase);
-            
-            
+
+
             var result = await client.SendAsync(requestMessage, CancellationToken.None);
             return await result.Content.ReadAsStringAsync();
-
         }
     }
 }

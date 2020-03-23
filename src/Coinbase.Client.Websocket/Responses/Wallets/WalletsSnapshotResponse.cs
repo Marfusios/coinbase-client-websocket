@@ -51,6 +51,7 @@ namespace Coinbase.Client.Websocket.Responses.Wallets
             var serialized = JsonConvert.SerializeObject(snapshot, CoinbaseJsonSerializer.Settings);
             communicator.StreamFakeMessage(ResponseMessage.TextMessage(serialized));
         }
+
         internal static bool TryHandle(JObject response, ISubject<WalletsSnapshotResponse> subject)
         {
             if (response?["type"].Value<string>() == "walletsSnapshot")
@@ -62,18 +63,21 @@ namespace Coinbase.Client.Websocket.Responses.Wallets
 
             return false;
         }
-        
     }
 
     public partial class WalletsSnapshotResponse
     {
-        public static WalletsSnapshotResponse FromJson(string json) =>
-            JsonConvert.DeserializeObject<WalletsSnapshotResponse>(json, CoinbaseJsonSerializer.Settings);
+        public static WalletsSnapshotResponse FromJson(string json)
+        {
+            return JsonConvert.DeserializeObject<WalletsSnapshotResponse>(json, CoinbaseJsonSerializer.Settings);
+        }
     }
 
     public static partial class Serialize
     {
-        public static string ToJson(WalletsSnapshotResponse self) =>
-            JsonConvert.SerializeObject(self, CoinbaseJsonSerializer.Settings);
+        public static string ToJson(WalletsSnapshotResponse self)
+        {
+            return JsonConvert.SerializeObject(self, CoinbaseJsonSerializer.Settings);
+        }
     }
 }

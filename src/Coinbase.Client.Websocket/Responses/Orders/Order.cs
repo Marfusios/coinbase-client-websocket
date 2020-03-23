@@ -41,13 +41,17 @@ namespace Coinbase.Client.Websocket.Responses.Orders
 
     public partial class Order
     {
-        public static Order[] FromJson(string json) =>
-            JsonConvert.DeserializeObject<Order[]>(json, CoinbaseJsonSerializer.Settings);
+        public static Order[] FromJson(string json)
+        {
+            return JsonConvert.DeserializeObject<Order[]>(json, CoinbaseJsonSerializer.Settings);
+        }
     }
 
     public static partial class Serialize
     {
-        public static string ToJson(this Order[] self) =>
-            JsonConvert.SerializeObject(self, CoinbaseJsonSerializer.Settings);
+        public static string ToJson(this Order[] self)
+        {
+            return JsonConvert.SerializeObject(self, CoinbaseJsonSerializer.Settings);
+        }
     }
 }

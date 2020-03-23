@@ -21,12 +21,15 @@ namespace Coinbase.Client.Websocket.Client
 
         internal readonly Subject<OrderBookSnapshotResponse> OrderBookSnapshotSubject =
             new Subject<OrderBookSnapshotResponse>();
+
         internal readonly Subject<OrderBookUpdateResponse> OrderBookUpdateSubject =
             new Subject<OrderBookUpdateResponse>();
-        
-        internal readonly Subject<WalletsSnapshotResponse> WalletsSnapshotSubject = new Subject<WalletsSnapshotResponse>();
+
+        internal readonly Subject<WalletsSnapshotResponse> WalletsSnapshotSubject =
+            new Subject<WalletsSnapshotResponse>();
+
         internal readonly Subject<OrdersSnapshotResponse> OrdersSnapshotSubject = new Subject<OrdersSnapshotResponse>();
-        
+
         internal readonly Subject<WalletResponse> WalletsSubject = new Subject<WalletResponse>();
         internal readonly Subject<OrderResponse> OrdersSubject = new Subject<OrderResponse>();
         internal readonly Subject<StatusResponse> StatusSubject = new Subject<StatusResponse>();
@@ -69,13 +72,13 @@ namespace Coinbase.Client.Websocket.Client
         /// </summary>
         public IObservable<OrderBookSnapshotResponse> OrderBookSnapshotStream =>
             OrderBookSnapshotSubject.AsObservable();
-        
+
         /// <summary>
         /// Order book snapshot stream - emits snapshot of the whole order book
         /// </summary>
         public IObservable<WalletsSnapshotResponse> WalletsSnapshotStream =>
             WalletsSnapshotSubject.AsObservable();
-        
+
         /// <summary>
         /// Order book snapshot stream - emits snapshot of the whole order book
         /// </summary>
@@ -96,12 +99,11 @@ namespace Coinbase.Client.Websocket.Client
         /// Orders stream
         /// </summary>
         public IObservable<OrderResponse> OrderStream => OrdersSubject.AsObservable();
-        
+
         /// <summary>
         /// Wallets stream
         /// </summary>
         public IObservable<WalletResponse> WalletStream => WalletsSubject.AsObservable();
-        
 
 
         // PRIVATE
