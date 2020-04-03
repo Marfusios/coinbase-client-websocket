@@ -33,8 +33,7 @@ namespace Coinbase.Client.Websocket.Tests.Integration
                     });
 
                     await communicator.Start();
-
-                    await client.Send(new SubscribeRequest(new[] {"BTC-EUR"}, ChannelSubscriptionType.Heartbeat));
+                    client.Send(new SubscribeRequest(new[] {"BTC-EUR"}, ChannelSubscriptionType.Heartbeat));
 
                     receivedEvent.WaitOne(TimeSpan.FromSeconds(30));
 
