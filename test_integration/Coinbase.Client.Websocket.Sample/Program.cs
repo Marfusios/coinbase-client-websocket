@@ -76,7 +76,7 @@ namespace Coinbase.Client.Websocket.Sample
                 ProductIds = new[]
                 {
                     "BTC-EUR",
-                    //"BTC-USD"
+                    "BTC-USD"
                 },
                 Channels = new[]
                 {
