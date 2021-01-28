@@ -98,7 +98,7 @@ namespace Coinbase.Client.Websocket.Sample
                 channels,
                 authenticator);
 
-            await client.Send(subscription);
+             client.Send(subscription);
         }
 
         private static void SubscribeToStreams(CoinbaseWebsocketClient client)

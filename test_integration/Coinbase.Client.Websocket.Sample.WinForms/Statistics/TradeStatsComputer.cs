@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bitmex.Client.Websocket.Responses;
-using Bitmex.Client.Websocket.Responses.Trades;
+using Coinbase.Client.Websocket.Responses;
+using Coinbase.Client.Websocket.Responses.Trades;
 
-namespace Bitmex.Client.Websocket.Sample.WinForms.Statistics
+namespace Coinbase.Client.Websocket.Sample.WinForms.Statistics
 {
     class TradeStatsComputer
     {
@@ -20,8 +20,8 @@ namespace Bitmex.Client.Websocket.Sample.WinForms.Statistics
             var timeLimit = DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(minutes));
             var trades = _lastTrades.Where(x => x.Timestamp >= timeLimit).ToArray();
 
-            var buys = trades.Where(x => x.Side == BitmexSide.Buy).Sum(x => x.Size);
-            var sells = trades.Where(x => x.Side == BitmexSide.Sell).Sum(x => x.Size);
+            var buys = trades.Where(x => x.Side == CoinbaseSide.Buy).Sum(x => x.Size);
+            var sells = trades.Where(x => x.Side == CoinbaseSide.Sell).Sum(x => x.Size);
 
             if(buys <= 0 && sells <= 0)
                 return TradeStats.NULL;

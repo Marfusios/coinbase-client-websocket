@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30104.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{360B18BD-653A-4824-9261-C88167EEBAD2}"
 EndProject
@@ -23,6 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coinbase.Client.Websocket.Sample.WinForms", "test_integration\Coinbase.Client.Websocket.Sample.WinForms\Coinbase.Client.Websocket.Sample.WinForms.csproj", "{40434847-B21B-42AB-A689-66B81C42100A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,6 +48,10 @@ Global
 		{7B649867-E540-4592-A821-8EB06BFB01C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B649867-E540-4592-A821-8EB06BFB01C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B649867-E540-4592-A821-8EB06BFB01C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40434847-B21B-42AB-A689-66B81C42100A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40434847-B21B-42AB-A689-66B81C42100A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40434847-B21B-42AB-A689-66B81C42100A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40434847-B21B-42AB-A689-66B81C42100A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,6 +61,7 @@ Global
 		{DB710400-5C51-41B4-A705-186631C99ED0} = {0544BC01-B569-4729-86B0-5AFDBF7EED46}
 		{120B8005-7858-4D04-A11B-ACCFFACAC91B} = {42E4078C-4FBE-4B03-B889-1573332945A9}
 		{7B649867-E540-4592-A821-8EB06BFB01C6} = {42E4078C-4FBE-4B03-B889-1573332945A9}
+		{40434847-B21B-42AB-A689-66B81C42100A} = {42E4078C-4FBE-4B03-B889-1573332945A9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EE3E0B94-CF20-4C22-B50B-E720E8DFD675}
