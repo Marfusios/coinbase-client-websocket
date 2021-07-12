@@ -16,7 +16,7 @@ namespace Coinbase.Client.Websocket.Json
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             Formatting = Formatting.None,
-            Converters = new List<JsonConverter>() { new CoinbaseStringEnumConverter { CamelCaseText = true} },
+            Converters = new List<JsonConverter> {new CoinbaseStringEnumConverter {CamelCaseText = true}},
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
 

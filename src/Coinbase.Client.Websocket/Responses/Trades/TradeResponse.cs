@@ -77,11 +77,8 @@ namespace Coinbase.Client.Websocket.Responses.Trades
         internal static bool TryHandle(JObject response, ISubject<TradeResponse> subject)
         {
             var type = response?["type"].Value<string>();
-            if (type != "match" && type != "last_match")
-            {
-                return false;
-            }
-            
+            if (type != "match" && type != "last_match") return false;
+
             var parsed = response.ToObject<TradeResponse>(CoinbaseJsonSerializer.Serializer);
             subject.OnNext(parsed);
             return true;

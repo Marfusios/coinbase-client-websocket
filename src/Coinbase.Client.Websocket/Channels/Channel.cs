@@ -4,7 +4,7 @@ namespace Coinbase.Client.Websocket.Channels
 {
     /// <summary>
     /// Used in requests and responses.
-    /// Information about subscribed channel. 
+    /// Information about subscribed channel.
     /// </summary>
     public class Channel
     {

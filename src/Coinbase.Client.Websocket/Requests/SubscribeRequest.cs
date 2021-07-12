@@ -1,4 +1,6 @@
-﻿using Coinbase.Client.Websocket.Channels;
+﻿using System.Net.Http;
+using Coinbase.Client.Websocket.Channels;
+using Coinbase.Client.Websocket.Utils;
 using Newtonsoft.Json;
 
 namespace Coinbase.Client.Websocket.Requests
@@ -27,6 +29,20 @@ namespace Coinbase.Client.Websocket.Requests
         }
 
         /// <inheritdoc />
+        public SubscribeRequest(string[] products, ChannelSubscriptionType[] channels,
+            ICoinbaseAuthenticaton authentication)
+        {
+            ProductIds = products;
+            Channels = channels;
+
+            _timestamp = authentication.NowS();
+            _key = authentication.ApiKey;
+            _passphrase = authentication.Passphrase;
+            _signature = authentication.CreateSignature(HttpMethod.Get, authentication.UnsignedSignature, _timestamp,
+                "/users/self/verify");
+        }
+
+        /// <inheritdoc />
         public override string Type => "subscribe";
 
         /// <summary>
@@ -42,20 +58,18 @@ namespace Coinbase.Client.Websocket.Requests
         /// Could be simple string as "level2", "heartbeat".
         /// Or complex object, example:
         /// {
-        ///   "name": "ticker",
-        ///   "product_ids": [
-        ///     "ETH-BTC",
-        ///     "ETH-USD"
-        ///   ]
+        /// "name": "ticker",
+        /// "product_ids": [
+        /// "ETH-BTC",
+        /// "ETH-USD"
+        /// ]
         /// }
         /// </summary>
         public object Channels { get; set; }
 
-
-        // TODO: authentication
-        public string Signature { get; set; }
-        public string Key { get; set; }
-        public string Passphrase { get; set; }
-        public string Timestamp { get; set; }
+        private string _signature;
+        private string _key;
+        private string _passphrase;
+        private readonly long _timestamp;
     }
 }

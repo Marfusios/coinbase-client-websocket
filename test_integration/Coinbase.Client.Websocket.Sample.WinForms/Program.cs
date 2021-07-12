@@ -2,12 +2,12 @@
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
-using Bitmex.Client.Websocket.Sample.WinForms.Presenters;
-using Bitmex.Client.Websocket.Sample.WinForms.Views;
+using Coinbase.Client.Websocket.Sample.WinForms.Presenters;
+using Coinbase.Client.Websocket.Sample.WinForms.Views;
 using Serilog;
 using Serilog.Events;
 
-namespace Bitmex.Client.Websocket.Sample.WinForms
+namespace Coinbase.Client.Websocket.Sample.WinForms
 {
     static class Program
     {

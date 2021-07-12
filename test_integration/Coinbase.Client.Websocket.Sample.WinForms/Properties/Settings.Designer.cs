@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Bitmex.Client.Websocket.Sample.WinForms.Properties
+namespace Coinbase.Client.Websocket.Sample.WinForms.Properties
 {
 
 

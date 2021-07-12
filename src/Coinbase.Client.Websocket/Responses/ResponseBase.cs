@@ -1,6 +1,5 @@
 ﻿using System;
 using Coinbase.Client.Websocket.Channels;
-using Newtonsoft.Json;
 
 namespace Coinbase.Client.Websocket.Responses
 {
@@ -17,7 +16,6 @@ namespace Coinbase.Client.Websocket.Responses
         /// <summary>
         /// Sequence numbers are increasing integer values for each product
         /// with every new message being exactly 1 sequence number than the one before it.
-        ///
         /// If you see a sequence number that is more than one value from the previous,
         /// it means a message has been dropped.
         /// A sequence number less than one you have seen can be ignored or has arrived out-of-order.

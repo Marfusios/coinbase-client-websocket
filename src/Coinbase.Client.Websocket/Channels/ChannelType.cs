@@ -13,9 +13,25 @@ namespace Coinbase.Client.Websocket.Channels
         Unknown = 0,
 
         /// <summary>
+        /// Full channel
+        /// </summary>
+        Full,
+
+        /// <summary>
+        /// This channel is a version of the full channel that only contains messages that include the authenticated user.
+        /// Consequently, you need to be authenticated to receive any messages.
+        /// </summary>
+        User,
+
+        /// <summary>
         /// Subscribed info channel
         /// </summary>
         Subscriptions,
+
+        /// <summary>
+        /// Status channel
+        /// </summary>
+        Status,
 
         /// <summary>
         /// Heartbeat/ping-pong channel
@@ -33,7 +49,7 @@ namespace Coinbase.Client.Websocket.Channels
         Level2,
 
         /// <summary>
-        /// Order book snapshot channel 
+        /// Order book snapshot channel
         /// </summary>
         Snapshot,
 
@@ -41,7 +57,6 @@ namespace Coinbase.Client.Websocket.Channels
         /// Order book diff/updates channel
         /// </summary>
         L2Update,
-
         Received,
         Open,
         Done,
@@ -56,8 +71,7 @@ namespace Coinbase.Client.Websocket.Channels
         /// </summary>
         Matches,
 
-        [EnumMember(Value = "last_match")]
-        LastMatch,
+        [EnumMember(Value = "last_match")] LastMatch,
 
         Change,
         Activate,
@@ -65,6 +79,10 @@ namespace Coinbase.Client.Websocket.Channels
         /// <summary>
         /// Server error channel
         /// </summary>
-        Error
+        Error,
+        Wallet,
+        Order,
+        OrdersSnapshot,
+        WalletsSnapshot
     }
 }

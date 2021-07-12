@@ -11,6 +11,11 @@
         Subscribe,
 
         /// <summary>
+        /// The status channel will send all products and currencies on a preset interval.
+        /// </summary>
+        Status,
+
+        /// <summary>
         /// Heartbeat/ping-pong subscription
         /// </summary>
         Heartbeat,
@@ -29,5 +34,15 @@
         /// Trades subscription
         /// </summary>
         Matches,
+
+        // <summary>
+        /// Authenticated user order channel
+        /// </summary>
+        User,
+
+        // <summary>
+        /// Full channel
+        /// </summary>
+        Full
     }
 }

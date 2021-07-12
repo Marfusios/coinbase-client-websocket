@@ -17,11 +17,8 @@ namespace Coinbase.Client.Websocket.Responses
 
         internal static bool TryHandle(JObject response, ISubject<ErrorResponse> subject)
         {
-            if (response?["type"].Value<string>() != "error")
-            {
-                return false;
-            }
-            
+            if (response?["type"].Value<string>() != "error") return false;
+
             var parsed = response.ToObject<ErrorResponse>(CoinbaseJsonSerializer.Serializer);
             subject.OnNext(parsed);
             return true;
