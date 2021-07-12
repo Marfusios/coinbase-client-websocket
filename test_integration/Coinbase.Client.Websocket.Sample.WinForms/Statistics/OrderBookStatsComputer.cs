@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Bitmex.Client.Websocket.Responses;
-using Bitmex.Client.Websocket.Responses.Books;
+using Coinbase.Client.Websocket.Responses;
+using Coinbase.Client.Websocket.Responses.Books;
 
-namespace Bitmex.Client.Websocket.Sample.WinForms.Statistics
+namespace Coinbase.Client.Websocket.Sample.WinForms.Statistics
 {
     class OrderBookStatsComputer
     {
@@ -13,7 +13,7 @@ namespace Bitmex.Client.Websocket.Sample.WinForms.Statistics
 
         public void HandleOrderBook(BookResponse response)
         {
-            if (response.Action == BitmexAction.Delete)
+            if (response.Action == CoinbaseAction.Delete)
             {
                 foreach (var bookLevel in response.Data)
                 {
@@ -21,8 +21,8 @@ namespace Bitmex.Client.Websocket.Sample.WinForms.Statistics
                 }
             }
 
-            if (response.Action == BitmexAction.Insert ||
-                response.Action == BitmexAction.Partial)
+            if (response.Action == CoinbaseAction.Insert ||
+                response.Action == CoinbaseAction.Partial)
             {
                 foreach (var bookLevel in response.Data)
                 {
@@ -30,7 +30,7 @@ namespace Bitmex.Client.Websocket.Sample.WinForms.Statistics
                 }
             }
 
-            if (response.Action == BitmexAction.Update)
+            if (response.Action == CoinbaseAction.Update)
             {
                 foreach (var bookLevel in response.Data)
                 {
@@ -69,7 +69,7 @@ namespace Bitmex.Client.Websocket.Sample.WinForms.Statistics
         {
             var id = book.Id;
 
-            if (book.Side == BitmexSide.Buy)
+            if (book.Side == CoinbaseSide.Buy)
             {
                 _bids[id] = book;
                 return;

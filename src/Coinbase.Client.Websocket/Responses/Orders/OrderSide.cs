@@ -7,6 +7,8 @@
     {
         Undefined,
         Bid,
-        Ask
+        Ask,
+        Buy,
+        Sell
     }
 }

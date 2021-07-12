@@ -42,11 +42,11 @@ namespace Coinbase.Client.Websocket.Requests
         /// Could be simple string as "level2", "heartbeat".
         /// Or complex object, example:
         /// {
-        ///   "name": "ticker",
-        ///   "product_ids": [
-        ///     "ETH-BTC",
-        ///     "ETH-USD"
-        ///   ]
+        /// "name": "ticker",
+        /// "product_ids": [
+        /// "ETH-BTC",
+        /// "ETH-USD"
+        /// ]
         /// }
         /// </summary>
         public object Channels { get; set; }

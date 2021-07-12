@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Bitmex.Client.Websocket.Sample.WinForms.Views
+namespace Coinbase.Client.Websocket.Sample.WinForms.Views
 {
     public partial class Form1 : Form, IStatsView
     {

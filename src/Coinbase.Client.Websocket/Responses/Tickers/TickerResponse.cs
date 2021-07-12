@@ -22,7 +22,6 @@ namespace Coinbase.Client.Websocket.Responses.Tickers
      */
 
     /// <summary>
-    /// 
     /// </summary>
     public class TickerResponse : ResponseBase
     {
@@ -67,29 +66,21 @@ namespace Coinbase.Client.Websocket.Responses.Tickers
         public double BestAsk { get; set; }
 
 
-        [JsonProperty("open_24h")]
-        public double Open24H { get; set; }
+        [JsonProperty("open_24h")] public double Open24H { get; set; }
 
-        [JsonProperty("volume_24h")]
-        public double Volume24H { get; set; }
+        [JsonProperty("volume_24h")] public double Volume24H { get; set; }
 
-        [JsonProperty("low_24h")]
-        public double Low24H { get; set; }
+        [JsonProperty("low_24h")] public double Low24H { get; set; }
 
-        [JsonProperty("high_24h")]
-        public double High24H { get; set; }
+        [JsonProperty("high_24h")] public double High24H { get; set; }
 
-        [JsonProperty("volume_30d")]
-        public double Volume30D { get; set; }
+        [JsonProperty("volume_30d")] public double Volume30D { get; set; }
 
 
         internal static bool TryHandle(JObject response, ISubject<TickerResponse> subject)
         {
-            if (response?["type"].Value<string>() != "ticker")
-            {
-                return false;
-            }
-            
+            if (response?["type"].Value<string>() != "ticker") return false;
+
             var parsed = response.ToObject<TickerResponse>(CoinbaseJsonSerializer.Serializer);
             subject.OnNext(parsed);
             return true;

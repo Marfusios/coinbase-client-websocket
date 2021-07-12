@@ -32,11 +32,8 @@ namespace Coinbase.Client.Websocket.Responses.Books
         internal static bool TryHandle(JObject response, ISubject<OrderBookSnapshotResponse> subject)
         {
             var type = response?["type"].Value<string>();
-            if (type != "snapshot")
-            {
-                return false;
-            }
-            
+            if (type != "snapshot") return false;
+
             var parsed = response.ToObject<OrderBookSnapshotResponse>(CoinbaseJsonSerializer.Serializer);
             subject.OnNext(parsed);
             return true;
