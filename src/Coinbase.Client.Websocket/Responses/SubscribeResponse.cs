@@ -17,8 +17,7 @@ namespace Coinbase.Client.Websocket.Responses
 
         internal static bool TryHandle(JObject response, ISubject<SubscribeResponse> subject)
         {
-            if (response?["type"].Value<string>() != "subscriptions")
-                return false;
+            if (response?["type"].Value<string>() != "subscriptions") return false;
 
             var parsed = response.ToObject<SubscribeResponse>(CoinbaseJsonSerializer.Serializer);
             subject.OnNext(parsed);

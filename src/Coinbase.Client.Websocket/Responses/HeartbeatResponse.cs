@@ -1,6 +1,4 @@
-﻿using System;
-using System.Reactive.Subjects;
-using Coinbase.Client.Websocket.Channels;
+﻿using System.Reactive.Subjects;
 using Coinbase.Client.Websocket.Json;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -26,11 +24,8 @@ namespace Coinbase.Client.Websocket.Responses
 
         internal static bool TryHandle(JObject response, ISubject<HeartbeatResponse> subject)
         {
-            if (response?["type"].Value<string>() != "heartbeat")
-            {
-                return false;
-            }
-            
+            if (response?["type"].Value<string>() != "heartbeat") return false;
+
             var parsed = response.ToObject<HeartbeatResponse>(CoinbaseJsonSerializer.Serializer);
             subject.OnNext(parsed);
             return true;

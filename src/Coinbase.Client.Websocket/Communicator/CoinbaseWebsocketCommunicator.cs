@@ -8,7 +8,7 @@ namespace Coinbase.Client.Websocket.Communicator
     public class CoinbaseWebsocketCommunicator : WebsocketClient, ICoinbaseCommunicator
     {
         /// <inheritdoc />
-        public CoinbaseWebsocketCommunicator(Uri url, Func<ClientWebSocket> clientFactory = null) 
+        public CoinbaseWebsocketCommunicator(Uri url, Func<ClientWebSocket> clientFactory = null)
             : base(url, clientFactory)
         {
         }

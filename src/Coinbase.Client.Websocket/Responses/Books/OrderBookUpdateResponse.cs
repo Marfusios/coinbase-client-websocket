@@ -8,7 +8,7 @@ namespace Coinbase.Client.Websocket.Responses.Books
     /// <summary>
     /// Order book update/diff
     /// </summary>
-    public class OrderBookUpdateResponse: ResponseBase
+    public class OrderBookUpdateResponse : ResponseBase
     {
         /// <summary>
         /// Target product id
@@ -27,11 +27,8 @@ namespace Coinbase.Client.Websocket.Responses.Books
         internal static bool TryHandle(JObject response, ISubject<OrderBookUpdateResponse> subject)
         {
             var type = response?["type"].Value<string>();
-            if (type != "l2update")
-            {
-                return false;
-            }
-            
+            if (type != "l2update") return false;
+
             var parsed = response.ToObject<OrderBookUpdateResponse>(CoinbaseJsonSerializer.Serializer);
             subject.OnNext(parsed);
             return true;
