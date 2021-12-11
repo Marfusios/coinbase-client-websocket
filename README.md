@@ -24,9 +24,9 @@ https://docs.pro.coinbase.com
 var exitEvent = new ManualResetEvent(false);
 var url = CoinbaseValues.ApiWebsocketUrl;
 
-using (var communicator = new CoinbaseWebsocketCommunicator(url))
+using (var communicator = new WebsocketClient(url))
 {
-    using (var client = new CoinbaseWebsocketClient(communicator))
+    using (var client = new CoinbaseWebsocketClient(NullLogger.Instance, communicator))
     {
         client.Streams.TradesStream.Subscribe(x =>
         {
@@ -134,23 +134,23 @@ Beware that you **need to resubscribe to channels** after reconnection happens. 
 
 ### Backtesting
 
-The library is prepared for backtesting. The dependency between `Client` and `Communicator` is via abstraction `ICoinbaseCommunicator`. There are two communicator implementations: 
-* `CoinbaseWebsocketCommunicator` - a realtime communication with Coinbase via websocket API.
-* `CoinbaseFileCommunicator` - a simulated communication, raw data are loaded from files and streamed. If you are **interested in buying historical raw data** (trades, order book events), contact me.
+The library is prepared for backtesting. The dependency between `Client` and `Communicator` is via abstraction `IWebsocketClient`. There are two communicator implementations: 
+* `WebsocketClient` - a realtime communication with Coinbase via websocket API.
+* `CoinbaseFileClient` - a simulated communication, raw data are loaded from files and streamed. If you are **interested in buying historical raw data** (trades, order book events), contact me.
 
-Feel free to implement `ICoinbaseCommunicator` on your own, for example, load raw data from database, cache, etc. 
+Feel free to implement `IWebsocketClient` on your own, for example, load raw data from database, cache, etc. 
 
 Usage: 
 
 ```csharp
-var communicator = new CoinbaseFileCommunicator();
+var communicator = new CoinbaseFileClient();
 communicator.FileNames = new[]
 {
     "data/coinbase_raw_xbtusd_2018-11-13.txt"
 };
 communicator.Delimiter = ";;";
 
-var client = new CoinbaseWebsocketClient(communicator);
+var client = new CoinbaseWebsocketClient(NullLogger.Instance, communicator);
 client.Streams.TradesStream.Subscribe(response =>
 {
     // do something with trade

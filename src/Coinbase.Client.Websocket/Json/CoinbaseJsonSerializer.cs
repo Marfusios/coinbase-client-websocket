@@ -1,46 +1,58 @@
 ﻿using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace Coinbase.Client.Websocket.Json
+namespace Coinbase.Client.Websocket.Json;
+
+/// <summary>
+/// Helper class for JSON serialization
+/// </summary>
+public static class CoinbaseJsonSerializer
 {
     /// <summary>
-    /// Helper class for JSON serialization
+    /// Custom JSON settings
     /// </summary>
-    public static class CoinbaseJsonSerializer
+    public static readonly JsonSerializerSettings Settings = new()
     {
-        /// <summary>
-        /// Custom JSON settings
-        /// </summary>
-        public static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
+        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+        Formatting = Formatting.None,
+        Converters = new List<JsonConverter>
         {
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            Formatting = Formatting.None,
-            Converters = new List<JsonConverter>() { new CoinbaseStringEnumConverter { CamelCaseText = true} },
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
-        };
-
-        /// <summary>
-        /// Custom preconfigured JSON serializer
-        /// </summary>
-        public static readonly JsonSerializer Serializer = JsonSerializer.Create(Settings);
-
-        /// <summary>
-        /// Deserialize JSON string data by our configuration
-        /// </summary>
-        public static T Deserialize<T>(string data)
+            new CoinbaseStringEnumConverter
+            {
+                NamingStrategy = new CamelCaseNamingStrategy()
+            }
+        },
+        ContractResolver = new DefaultContractResolver
         {
-            return JsonConvert.DeserializeObject<T>(data, Settings);
+            NamingStrategy = new SnakeCaseNamingStrategy()
         }
+    };
 
-        /// <summary>
-        /// Serialize object into JSON by our configuration
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public static string Serialize(object data)
-        {
-            return JsonConvert.SerializeObject(data, Settings);
-        }
+    /// <summary>
+    /// Custom preconfigured JSON serializer
+    /// </summary>
+    public static readonly JsonSerializer Serializer = JsonSerializer.Create(Settings);
+
+    /// <summary>
+    /// Deserialize JSON string data by our configuration
+    /// </summary>
+    public static T Deserialize<T>(string data)
+    {
+        return JsonConvert.DeserializeObject<T>(data, Settings);
     }
+
+    /// <summary>
+    /// Serialize object into JSON by our configuration
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    public static string Serialize(object data)
+    {
+        return JsonConvert.SerializeObject(data, Settings);
+    }
+
+    internal static ILogger Logger = NullLogger.Instance;
 }

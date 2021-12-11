@@ -3,46 +3,38 @@ using System.Threading;
 using System.Threading.Tasks;
 using Coinbase.Client.Websocket.Channels;
 using Coinbase.Client.Websocket.Client;
-using Coinbase.Client.Websocket.Communicator;
 using Coinbase.Client.Websocket.Requests;
 using Coinbase.Client.Websocket.Responses;
+using Microsoft.Extensions.Logging.Abstractions;
+using Websocket.Client;
 using Xunit;
 
-namespace Coinbase.Client.Websocket.Tests.Integration
+namespace Coinbase.Client.Websocket.Tests.Integration;
+
+public class CoinbaseWebsocketClientTests
 {
-    public class CoinbaseWebsocketClientTests
+    [Fact]
+    public async Task Heartbeat()
     {
-        private static readonly string API_KEY = "your_api_key";
-        private static readonly string API_SECRET = "";
+        var url = CoinbaseValues.ApiWebsocketUrl;
+        using var apiClient = new WebsocketClient(url);
+        HeartbeatResponse received = null;
+        var receivedEvent = new ManualResetEvent(false);
 
-        [Fact]
-        public async Task Heartbeat()
+        using var client = new CoinbaseWebsocketClient(NullLogger.Instance, apiClient);
+        client.Streams.HeartbeatStream.Subscribe(pong =>
         {
-            var url = CoinbaseValues.ApiWebsocketUrl;
-            using (var communicator = new CoinbaseWebsocketCommunicator(url))
-            {
-                HeartbeatResponse received = null;
-                var receivedEvent = new ManualResetEvent(false);
+            received = pong;
+            receivedEvent.Set();
+        });
 
-                using (var client = new CoinbaseWebsocketClient(communicator))
-                {
+        await apiClient.Start();
 
-                    client.Streams.HeartbeatStream.Subscribe(pong =>
-                    {
-                        received = pong;
-                        receivedEvent.Set();
-                    });
+        client.Send(new SubscribeRequest(new[] { "BTC-EUR" }, ChannelType.Heartbeat));
 
-                    await communicator.Start();
+        receivedEvent.WaitOne(TimeSpan.FromSeconds(30));
 
-                    client.Send(new SubscribeRequest(new []{"BTC-EUR"}, ChannelSubscriptionType.Heartbeat));
-
-                    receivedEvent.WaitOne(TimeSpan.FromSeconds(30));
-
-                    Assert.NotNull(received);
-                }
-            }
-        }
-
+        Assert.NotNull(received);
     }
+
 }

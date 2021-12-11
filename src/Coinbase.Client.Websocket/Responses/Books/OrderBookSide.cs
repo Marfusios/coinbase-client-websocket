@@ -1,12 +1,11 @@
-﻿namespace Coinbase.Client.Websocket.Responses.Books
+﻿namespace Coinbase.Client.Websocket.Responses.Books;
+
+/// <summary>
+/// Order book side
+/// </summary>
+public enum OrderBookSide
 {
-    /// <summary>
-    /// Order book side
-    /// </summary>
-    public enum OrderBookSide
-    {
-        Undefined,
-        Buy,
-        Sell
-    }
+    Undefined,
+    Buy,
+    Sell
 }
