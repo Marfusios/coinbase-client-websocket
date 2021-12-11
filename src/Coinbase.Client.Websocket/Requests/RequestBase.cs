@@ -1,13 +1,12 @@
-﻿namespace Coinbase.Client.Websocket.Requests
+﻿namespace Coinbase.Client.Websocket.Requests;
+
+/// <summary>
+/// Base class for every request
+/// </summary>
+public abstract class RequestBase
 {
     /// <summary>
-    /// Base class for every request
+    /// Unique request type
     /// </summary>
-    public abstract class RequestBase
-    {
-        /// <summary>
-        /// Unique request type
-        /// </summary>
-        public abstract string Type { get; }
-    }
+    public abstract string Type { get; }
 }

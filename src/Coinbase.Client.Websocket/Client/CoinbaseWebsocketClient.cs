@@ -1,135 +1,102 @@
 ﻿using System;
-using System.Threading.Tasks;
-using Coinbase.Client.Websocket.Communicator;
 using Coinbase.Client.Websocket.Json;
-using Coinbase.Client.Websocket.Logging;
 using Coinbase.Client.Websocket.Requests;
 using Coinbase.Client.Websocket.Responses;
 using Coinbase.Client.Websocket.Responses.Books;
+using Coinbase.Client.Websocket.Responses.Full;
+using Coinbase.Client.Websocket.Responses.Status;
 using Coinbase.Client.Websocket.Responses.Tickers;
-using Coinbase.Client.Websocket.Responses.Trades;
-using Coinbase.Client.Websocket.Validations;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using Websocket.Client;
 
-namespace Coinbase.Client.Websocket.Client
+namespace Coinbase.Client.Websocket.Client;
+
+/// <inheritdoc />
+public class CoinbaseWebsocketClient : ICoinbaseWebsocketClient
 {
+    readonly ILogger _logger;
+    readonly IWebsocketClient _client;
+    readonly IDisposable _messageReceivedSubscription;
+
     /// <summary>
-    /// Coinbase websocket client.
-    /// Use method `Send()` to subscribe to channels.
-    /// And `Streams` to subscribe. 
+    /// Creates a new instance.
     /// </summary>
-    public class CoinbaseWebsocketClient : IDisposable
+    /// <param name="logger">The logger to use for logging any warnings or errors.</param>
+    /// <param name="client">The client to use for the trade websocket.</param>
+    public CoinbaseWebsocketClient(ILogger logger, IWebsocketClient client)
     {
-        private static readonly ILog Log = LogProvider.GetCurrentClassLogger();
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _client = client ?? throw new ArgumentNullException(nameof(client));
 
-        private readonly ICoinbaseCommunicator _communicator;
-        private readonly IDisposable _messageReceivedSubscription;
+        CoinbaseJsonSerializer.Logger = logger;
 
-        /// <inheritdoc />
-        public CoinbaseWebsocketClient(ICoinbaseCommunicator communicator)
+        _messageReceivedSubscription = _client.MessageReceived.Subscribe(HandleMessage);
+    }
+
+    /// <inheritdoc />
+    public CoinbaseClientStreams Streams { get; } = new();
+
+    /// <summary>
+    /// Cleanup everything
+    /// </summary>
+    public void Dispose() => _messageReceivedSubscription?.Dispose();
+
+    /// <inheritdoc />
+    public void Send<T>(T request) where T : RequestBase
+    {
+        if (request == null) throw new ArgumentNullException(nameof(request));
+
+        try
         {
-            ConValidations.ValidateInput(communicator, nameof(communicator));
-
-            _communicator = communicator;
-            _messageReceivedSubscription = _communicator.MessageReceived.Subscribe(HandleMessage);
+            var serialized = CoinbaseJsonSerializer.Serialize(request);
+            _client.Send(serialized);
         }
-
-        /// <summary>
-        /// Provided message streams
-        /// </summary>
-        public CoinbaseClientStreams Streams { get; } = new CoinbaseClientStreams();
-
-        /// <summary>
-        /// Cleanup everything
-        /// </summary>
-        public void Dispose()
+        catch (Exception e)
         {
-            _messageReceivedSubscription?.Dispose();
+            _logger.LogError(e, LogMessage($"Exception while sending message '{request}'. Error: {e.Message}"));
+            throw;
         }
+    }
 
-        /// <summary>
-        /// Serializes request and sends message via websocket communicator. 
-        /// It logs and re-throws every exception. 
-        /// </summary>
-        /// <param name="request">Request/message to be sent</param>
-        public void Send<T>(T request) where T: RequestBase
+    internal static string LogMessage(string message) => $"[COINBASE WEBSOCKET CLIENT] {message}";
+
+    void HandleMessage(ResponseMessage message)
+    {
+        try
         {
-            try
-            {
-                ConValidations.ValidateInput(request, nameof(request));
+            var messageSafe = (message.Text ?? string.Empty).Trim();
 
-                var serialized = 
-                    CoinbaseJsonSerializer.Serialize(request);
-                _communicator.Send(serialized);
-            }
-            catch (Exception e)
-            {
-                Log.Error(e, L($"Exception while sending message '{request}'. Error: {e.Message}"));
-                throw;
-            }
-        }
-
-        private string L(string msg)
-        {
-            return $"[BMX WEBSOCKET CLIENT] {msg}";
-        }
-
-        private void HandleMessage(ResponseMessage message)
-        {
-            try
-            {
-                bool handled;
-                var messageSafe = (message.Text ?? string.Empty).Trim();
-
-                if (messageSafe.StartsWith("{"))
-                {
-                    handled = HandleObjectMessage(messageSafe);
-                    if (handled)
-                        return;
-                }
-
-                handled = HandleRawMessage(messageSafe);
-                if (handled)
+            if (messageSafe.StartsWith("{"))
+                if (HandleObjectMessage(messageSafe))
                     return;
 
-                Log.Warn(L($"Unhandled response:  '{messageSafe}'"));
-            }
-            catch (Exception e)
-            {
-                Log.Error(e, L("Exception while receiving message"));
-            }
+            _logger.LogWarning(LogMessage($"Unhandled response:  '{messageSafe}'"));
         }
-
-        private bool HandleRawMessage(string msg)
+        catch (Exception e)
         {
-            // ********************
-            // ADD RAW HANDLERS BELOW
-            // ********************
-
-            return false;
+            _logger.LogError(e, LogMessage("Exception while receiving message"));
         }
+    }
 
-        private bool HandleObjectMessage(string msg)
-        {
-            var response = CoinbaseJsonSerializer.Deserialize<JObject>(msg);
+    bool HandleObjectMessage(string msg)
+    {
+        var response = CoinbaseJsonSerializer.Deserialize<JObject>(msg);
 
-            // ********************
-            // ADD OBJECT HANDLERS BELOW
-            // ********************
-
-            return
-
-                HeartbeatResponse.TryHandle(response, Streams.HeartbeatSubject) ||
-                TradeResponse.TryHandle(response, Streams.TradesSubject) ||
-                OrderBookUpdateResponse.TryHandle(response, Streams.OrderBookUpdateSubject) ||
-                OrderBookSnapshotResponse.TryHandle(response, Streams.OrderBookSnapshotSubject) ||
-                TickerResponse.TryHandle(response, Streams.TickerSubject) ||
-
-                ErrorResponse.TryHandle(response, Streams.ErrorSubject) ||
-                SubscribeResponse.TryHandle(response, Streams.SubscribeSubject) ||
-                
-                false;
-        }
+        return
+            HeartbeatResponse.TryHandle(response, Streams.HeartbeatStream) ||
+            OrderBookUpdateResponse.TryHandle(response, Streams.OrderBookUpdateStream) ||
+            OrderBookSnapshotResponse.TryHandle(response, Streams.OrderBookSnapshotStream) ||
+            TickerResponse.TryHandle(response, Streams.TickerStream) ||
+            ErrorResponse.TryHandle(response, Streams.ErrorStream) ||
+            SubscribeResponse.TryHandle(response, Streams.SubscribeStream) ||
+            ActivateResponse.TryHandle(response, Streams.ActivateStream) ||
+            ChangeResponse.TryHandle(response, Streams.ChangeStream) ||
+            DoneResponse.TryHandle(response, Streams.DoneStream) ||
+            MatchResponse.TryHandle(response, Streams.MatchesStream) ||
+            OpenResponse.TryHandle(response, Streams.OpenStream) ||
+            ReceivedResponse.TryHandle(response, Streams.ReceivedStream) ||
+            StatusResponse.TryHandle(response, Streams.StatusStream) ||
+            AuctionResponse.TryHandle(response, Streams.AuctionStream);
     }
 }

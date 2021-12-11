@@ -6,163 +6,183 @@ using System.Threading;
 using System.Threading.Tasks;
 using Coinbase.Client.Websocket.Channels;
 using Coinbase.Client.Websocket.Client;
-using Coinbase.Client.Websocket.Communicator;
 using Coinbase.Client.Websocket.Json;
 using Coinbase.Client.Websocket.Requests;
+using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
 using Serilog;
 using Serilog.Events;
+using Websocket.Client;
 
-namespace Coinbase.Client.Websocket.Sample
+namespace Coinbase.Client.Websocket.Sample;
+
+class Program
 {
-    class Program
+    static readonly ManualResetEvent ExitEvent = new(false);
+
+    static readonly string API_KEY = "your api key";
+    static readonly string API_SECRET = "";
+
+    static void Main(string[] args)
     {
-        private static readonly ManualResetEvent ExitEvent = new ManualResetEvent(false);
+        InitLogging();
 
-        private static readonly string API_KEY = "your api key";
-        private static readonly string API_SECRET = "";
+        AppDomain.CurrentDomain.ProcessExit += CurrentDomainOnProcessExit;
+        AssemblyLoadContext.Default.Unloading += DefaultOnUnloading;
+        Console.CancelKeyPress += ConsoleOnCancelKeyPress;
 
-        static void Main(string[] args)
+        Console.WriteLine("|=======================|");
+        Console.WriteLine("|    COINBASE CLIENT    |");
+        Console.WriteLine("|=======================|");
+        Console.WriteLine();
+
+        Log.Debug("====================================");
+        Log.Debug("              STARTING              ");
+        Log.Debug("====================================");
+
+
+
+        var url = CoinbaseValues.ApiWebsocketUrl;
+        using var apiClient = new WebsocketClient(url);
+        apiClient.Name = "Coinbase-1";
+        apiClient.ReconnectTimeout = TimeSpan.FromMinutes(1);
+
+        using var client = new CoinbaseWebsocketClient(NullLogger.Instance, apiClient);
+        SubscribeToStreams(client);
+
+        apiClient.ReconnectionHappened.Subscribe(async type =>
         {
-            InitLogging();
+            Log.Information($"Reconnection happened, type: {type}, resubscribing..");
+            await SendSubscriptionRequests(client);
+        });
 
-            AppDomain.CurrentDomain.ProcessExit += CurrentDomainOnProcessExit;
-            AssemblyLoadContext.Default.Unloading += DefaultOnUnloading;
-            Console.CancelKeyPress += ConsoleOnCancelKeyPress;
+        apiClient.Start().Wait();
 
-            Console.WriteLine("|=======================|");
-            Console.WriteLine("|    COINBASE CLIENT    |");
-            Console.WriteLine("|=======================|");
-            Console.WriteLine();
+        ExitEvent.WaitOne();
 
-            Log.Debug("====================================");
-            Log.Debug("              STARTING              ");
-            Log.Debug("====================================");
-           
+        Log.Debug("====================================");
+        Log.Debug("              STOPPING              ");
+        Log.Debug("====================================");
+        Log.CloseAndFlush();
+    }
 
-
-            var url = CoinbaseValues.ApiWebsocketUrl;
-            using (var communicator = new CoinbaseWebsocketCommunicator(url))
+    static async Task SendSubscriptionRequests(CoinbaseWebsocketClient client)
+    {
+        var subscription = new SubscribeRequest
+        {
+            ProductIds = new[]
             {
-                communicator.Name = "Coinbase-1";
-                communicator.ReconnectTimeout = TimeSpan.FromMinutes(1);
-
-                using (var client = new CoinbaseWebsocketClient(communicator))
-                {
-                    SubscribeToStreams(client);
-
-                    communicator.ReconnectionHappened.Subscribe(async type =>
-                    {
-                        Log.Information($"Reconnection happened, type: {type}, resubscribing..");
-                        await SendSubscriptionRequests(client);
-                    });
-
-                    communicator.Start().Wait();
-
-                    ExitEvent.WaitOne();
-                }
+                "BTC-EUR",
+                "BTC-USD"
+            },
+            Channels = new[]
+            {
+                ChannelType.Heartbeat,
+                ChannelType.Ticker,
+                ChannelType.Level2,
+                ChannelType.Full
             }
+        };
 
-            Log.Debug("====================================");
-            Log.Debug("              STOPPING              ");
-            Log.Debug("====================================");
-            Log.CloseAndFlush();
-        }
+        client.Send(subscription);
+        client.Send(new StatusSubscribeRequest());
+    }
 
-        private static async Task SendSubscriptionRequests(CoinbaseWebsocketClient client)
+    static void SubscribeToStreams(CoinbaseWebsocketClient client)
+    {
+        client.Streams.ErrorStream.Subscribe(x =>
+            Log.Warning($"Error received, message: {x.Message}"));
+
+
+        client.Streams.SubscribeStream.Subscribe(x =>
         {
-            var subscription = new SubscribeRequest
-            {
-                ProductIds = new[]
-                {
-                    "BTC-EUR",
-                    "BTC-USD"
-                },
-                Channels = new[]
-                {
-                    //ChannelSubscriptionType.Heartbeat,
-                    ChannelSubscriptionType.Ticker,
-                    ChannelSubscriptionType.Matches,
-                    //ChannelSubscriptionType.Level2
-                }
-            };
+            Log.Information($"Subscribed, " +
+                            $"channels: {JsonConvert.SerializeObject(x.Channels, CoinbaseJsonSerializer.Settings)}");
+        });
 
-            client.Send(subscription);
-        }
+        client.Streams.HeartbeatStream.Subscribe(x =>
+            Log.Information($"Heartbeat received, product: {x.ProductId}, seq: {x.Sequence}, time: {x.Time}"));
 
-        private static void SubscribeToStreams(CoinbaseWebsocketClient client)
+        client.Streams.StatusStream.Subscribe(x =>
+            Log.Information($"Status [{x.Products.Count} products]. [{x.Currencies.Count} currencies]")
+        );
+
+        client.Streams.TickerStream.Subscribe(x =>
+            Log.Information($"Ticker {x.ProductId}. Bid: {x.BestBid} Ask: {x.BestAsk} Last size: {x.LastSize}, Price: {x.Price}")
+        );
+
+        client.Streams.MatchesStream.Subscribe(x =>
         {
-            client.Streams.ErrorStream.Subscribe(x =>
-                Log.Warning($"Error received, message: {x.Message}"));
+            Log.Information($"Trade executed [{x.ProductId}] {x.TradeSide} price: {x.Price} size: {x.Size}");
+        });
 
-
-            client.Streams.SubscribeStream.Subscribe(x =>
-            {
-                Log.Information($"Subscribed, " +
-                                $"channels: {JsonConvert.SerializeObject(x.Channels, CoinbaseJsonSerializer.Settings)}");
-            });
-
-            client.Streams.HeartbeatStream.Subscribe(x =>
-                Log.Information($"Heartbeat received, product: {x.ProductId}, seq: {x.Sequence}, time: {x.Time}"));
-
-
-            client.Streams.TickerStream.Subscribe(x =>
-                    Log.Information($"Ticker {x.ProductId}. Bid: {x.BestBid} Ask: {x.BestAsk} Last size: {x.LastSize}, Price: {x.Price}")
-                );
-
-            client.Streams.TradesStream.Subscribe(x =>
-            {
-                Log.Information($"Trade executed [{x.ProductId}] {x.TradeSide} price: {x.Price} size: {x.Size}");
-            });
-
-            client.Streams.OrderBookSnapshotStream.Subscribe(x =>
-            {
-                Log.Information($"OB snapshot [{x.ProductId}] bids: {x.Bids.Length}, asks: {x.Asks.Length}");
-            });
-
-            client.Streams.OrderBookUpdateStream.Subscribe(x =>
-            {
-                Log.Information($"OB updates [{x.ProductId}] changes: {x.Changes.Length}");
-            });
-            
-            // example of unsubscribe requests
-            //Task.Run(async () =>
-            //{
-            //    await Task.Delay(5000);
-            //    await client.Send(new BookSubscribeRequest("XBTUSD") {IsUnsubscribe = true});
-            //    await Task.Delay(5000);
-            //    await client.Send(new TradesSubscribeRequest() {IsUnsubscribe = true});
-            //});
-        }
-
-        private static void InitLogging()
+        client.Streams.OrderBookSnapshotStream.Subscribe(x =>
         {
-            var executingDir = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            var logPath = Path.Combine(executingDir, "logs", "verbose.log");
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Verbose()
-                .WriteTo.File(logPath, rollingInterval: RollingInterval.Day)
-                .WriteTo.ColoredConsole(LogEventLevel.Debug)
-                .CreateLogger();
-        }
+            Log.Information($"OB snapshot [{x.ProductId}] bids: {x.Bids.Length}, asks: {x.Asks.Length}");
+        });
 
-        private static void CurrentDomainOnProcessExit(object sender, EventArgs eventArgs)
+        client.Streams.OrderBookUpdateStream.Subscribe(x =>
         {
-            Log.Warning("Exiting process");
-            ExitEvent.Set();
-        }
+            Log.Information($"OB updates [{x.ProductId}] changes: {x.Changes.Length}");
+        });
 
-        private static void DefaultOnUnloading(AssemblyLoadContext assemblyLoadContext)
+        client.Streams.ReceivedStream.Subscribe(x =>
         {
-            Log.Warning("Unloading process");
-            ExitEvent.Set();
-        }
+            Log.Information($"Order received: {x.OrderId}");
+        });
 
-        private static void ConsoleOnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
+        client.Streams.OpenStream.Subscribe(x =>
         {
-            Log.Warning("Canceling process");
-            e.Cancel = true;
-            ExitEvent.Set();
-        }
+            Log.Information($"Order opened: {x.OrderId}");
+        });
+
+        client.Streams.ChangeStream.Subscribe(x =>
+        {
+            Log.Information($"Order changed: {x.OrderId}");
+        });
+
+        client.Streams.DoneStream.Subscribe(x =>
+        {
+            Log.Information($"Order done: {x.OrderId}");
+        });
+
+        // example of unsubscribe requests
+        //_ = Task.Run(async () =>
+        //{
+        //    await Task.Delay(5000);
+        //    client.Send(new UnsubscribeRequest(new[] { "BTC-EUR" }, new[] { ChannelType.Level2 }));
+        //    await Task.Delay(5000);
+        //    client.Send(new UnsubscribeRequest(new[] { "BTC-EUR" }, new[] { ChannelType.Matches }));
+        //});
+    }
+
+    static void InitLogging()
+    {
+        var executingDir = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+        var logPath = Path.Combine(executingDir, "logs", "verbose.log");
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Verbose()
+            .WriteTo.File(logPath, rollingInterval: RollingInterval.Day)
+            .WriteTo.ColoredConsole(LogEventLevel.Debug)
+            .CreateLogger();
+    }
+
+    static void CurrentDomainOnProcessExit(object sender, EventArgs eventArgs)
+    {
+        Log.Warning("Exiting process");
+        ExitEvent.Set();
+    }
+
+    static void DefaultOnUnloading(AssemblyLoadContext assemblyLoadContext)
+    {
+        Log.Warning("Unloading process");
+        ExitEvent.Set();
+    }
+
+    static void ConsoleOnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
+    {
+        Log.Warning("Canceling process");
+        e.Cancel = true;
+        ExitEvent.Set();
     }
 }
