@@ -1,5 +1,4 @@
 ﻿using System;
-using Coinbase.Client.Websocket.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -10,8 +9,6 @@ namespace Coinbase.Client.Websocket.Json
     /// </summary>
     public class CoinbaseStringEnumConverter : StringEnumConverter
     {
-        private static readonly ILog Log = LogProvider.GetCurrentClassLogger();
-
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             try
@@ -26,7 +23,7 @@ namespace Coinbase.Client.Websocket.Json
             }
             catch
             {
-                Log.Warn($"Can't parse enum, value: {reader.Value}, target type: {objectType}, using default '{existingValue}'");
+                Console.WriteLine($"Can't parse enum, value: {reader.Value}, target type: {objectType}, using default '{existingValue}'");
                 return existingValue;
             }
         }

@@ -9,9 +9,11 @@ using Coinbase.Client.Websocket.Client;
 using Coinbase.Client.Websocket.Communicator;
 using Coinbase.Client.Websocket.Json;
 using Coinbase.Client.Websocket.Requests;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Serilog;
 using Serilog.Events;
+using Serilog.Extensions.Logging;
 
 namespace Coinbase.Client.Websocket.Sample
 {
@@ -19,12 +21,12 @@ namespace Coinbase.Client.Websocket.Sample
     {
         private static readonly ManualResetEvent ExitEvent = new ManualResetEvent(false);
 
-        private static readonly string API_KEY = "your api key";
-        private static readonly string API_SECRET = "";
+        private static readonly string ApiKey = "your api key";
+        private static readonly string ApiSecret = "";
 
         static void Main(string[] args)
         {
-            InitLogging();
+            var logger = InitLogging();
 
             AppDomain.CurrentDomain.ProcessExit += CurrentDomainOnProcessExit;
             AssemblyLoadContext.Default.Unloading += DefaultOnUnloading;
@@ -38,22 +40,22 @@ namespace Coinbase.Client.Websocket.Sample
             Log.Debug("====================================");
             Log.Debug("              STARTING              ");
             Log.Debug("====================================");
-           
+
 
 
             var url = CoinbaseValues.ApiWebsocketUrl;
-            using (var communicator = new CoinbaseWebsocketCommunicator(url))
+            using (var communicator = new CoinbaseWebsocketCommunicator(url, logger.CreateLogger<CoinbaseWebsocketCommunicator>()))
             {
                 communicator.Name = "Coinbase-1";
                 communicator.ReconnectTimeout = TimeSpan.FromMinutes(1);
 
-                using (var client = new CoinbaseWebsocketClient(communicator))
+                using (var client = new CoinbaseWebsocketClient(communicator, logger.CreateLogger<CoinbaseWebsocketClient>()))
                 {
                     SubscribeToStreams(client);
 
                     communicator.ReconnectionHappened.Subscribe(async type =>
                     {
-                        Log.Information($"Reconnection happened, type: {type}, resubscribing..");
+                        Log.Information("Reconnection happened, type: {type}, resubscribing..", type);
                         await SendSubscriptionRequests(client);
                     });
 
@@ -124,7 +126,7 @@ namespace Coinbase.Client.Websocket.Sample
             {
                 Log.Information($"OB updates [{x.ProductId}] changes: {x.Changes.Length}");
             });
-            
+
             // example of unsubscribe requests
             //Task.Run(async () =>
             //{
@@ -135,15 +137,17 @@ namespace Coinbase.Client.Websocket.Sample
             //});
         }
 
-        private static void InitLogging()
+        private static SerilogLoggerFactory InitLogging()
         {
             var executingDir = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             var logPath = Path.Combine(executingDir, "logs", "verbose.log");
-            Log.Logger = new LoggerConfiguration()
+            var logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
                 .WriteTo.File(logPath, rollingInterval: RollingInterval.Day)
-                .WriteTo.ColoredConsole(LogEventLevel.Debug)
+                .WriteTo.Console(LogEventLevel.Debug)
                 .CreateLogger();
+            Log.Logger = logger;
+            return new SerilogLoggerFactory(logger);
         }
 
         private static void CurrentDomainOnProcessExit(object sender, EventArgs eventArgs)

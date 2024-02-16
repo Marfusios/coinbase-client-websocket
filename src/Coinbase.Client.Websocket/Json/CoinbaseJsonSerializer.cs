@@ -12,11 +12,11 @@ namespace Coinbase.Client.Websocket.Json
         /// <summary>
         /// Custom JSON settings
         /// </summary>
-        public static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
+        public static readonly JsonSerializerSettings Settings = new JsonSerializerSettings()
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             Formatting = Formatting.None,
-            Converters = new List<JsonConverter>() { new CoinbaseStringEnumConverter { CamelCaseText = true} },
+            Converters = new List<JsonConverter> { new CoinbaseStringEnumConverter { NamingStrategy = new CamelCaseNamingStrategy() } },
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
 
@@ -28,7 +28,7 @@ namespace Coinbase.Client.Websocket.Json
         /// <summary>
         /// Deserialize JSON string data by our configuration
         /// </summary>
-        public static T Deserialize<T>(string data)
+        public static T? Deserialize<T>(string data) where T : class
         {
             return JsonConvert.DeserializeObject<T>(data, Settings);
         }

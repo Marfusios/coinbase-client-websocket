@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Coinbase.Client.Websocket.Communicator;
 using Coinbase.Client.Websocket.Json;
-using Coinbase.Client.Websocket.Logging;
 using Coinbase.Client.Websocket.Requests;
 using Coinbase.Client.Websocket.Responses;
 using Coinbase.Client.Websocket.Responses.Books;
 using Coinbase.Client.Websocket.Responses.Tickers;
 using Coinbase.Client.Websocket.Responses.Trades;
 using Coinbase.Client.Websocket.Validations;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json.Linq;
 using Websocket.Client;
 
@@ -21,17 +21,17 @@ namespace Coinbase.Client.Websocket.Client
     /// </summary>
     public class CoinbaseWebsocketClient : IDisposable
     {
-        private static readonly ILog Log = LogProvider.GetCurrentClassLogger();
-
+        private readonly ILogger<CoinbaseWebsocketClient> _logger;
         private readonly ICoinbaseCommunicator _communicator;
         private readonly IDisposable _messageReceivedSubscription;
 
         /// <inheritdoc />
-        public CoinbaseWebsocketClient(ICoinbaseCommunicator communicator)
+        public CoinbaseWebsocketClient(ICoinbaseCommunicator communicator, ILogger<CoinbaseWebsocketClient>? logger = null)
         {
             ConValidations.ValidateInput(communicator, nameof(communicator));
 
             _communicator = communicator;
+            _logger = logger ?? NullLogger<CoinbaseWebsocketClient>.Instance;
             _messageReceivedSubscription = _communicator.MessageReceived.Subscribe(HandleMessage);
         }
 
@@ -53,19 +53,19 @@ namespace Coinbase.Client.Websocket.Client
         /// It logs and re-throws every exception. 
         /// </summary>
         /// <param name="request">Request/message to be sent</param>
-        public void Send<T>(T request) where T: RequestBase
+        public void Send<T>(T request) where T : RequestBase
         {
             try
             {
                 ConValidations.ValidateInput(request, nameof(request));
 
-                var serialized = 
+                var serialized =
                     CoinbaseJsonSerializer.Serialize(request);
                 _communicator.Send(serialized);
             }
             catch (Exception e)
             {
-                Log.Error(e, L($"Exception while sending message '{request}'. Error: {e.Message}"));
+                _logger.LogError(e, L("Exception while sending message '{request}'. Error: {error}"), request, e.Message);
                 throw;
             }
         }
@@ -93,11 +93,11 @@ namespace Coinbase.Client.Websocket.Client
                 if (handled)
                     return;
 
-                Log.Warn(L($"Unhandled response:  '{messageSafe}'"));
+                _logger.LogWarning(L("Unhandled response: '{message}'"), messageSafe);
             }
             catch (Exception e)
             {
-                Log.Error(e, L("Exception while receiving message"));
+                _logger.LogError(e, L("Exception while receiving message, error: {error}"), e.Message);
             }
         }
 
@@ -128,7 +128,7 @@ namespace Coinbase.Client.Websocket.Client
 
                 ErrorResponse.TryHandle(response, Streams.ErrorSubject) ||
                 SubscribeResponse.TryHandle(response, Streams.SubscribeSubject) ||
-                
+
                 false;
         }
     }
