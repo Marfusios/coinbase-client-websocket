@@ -41,6 +41,11 @@ namespace Coinbase.Client.Websocket.Client
         public CoinbaseClientStreams Streams { get; } = new CoinbaseClientStreams();
 
         /// <summary>
+        /// Expose logger for this client
+        /// </summary>
+        public ILogger<CoinbaseWebsocketClient> Logger => _logger;
+
+        /// <summary>
         /// Cleanup everything
         /// </summary>
         public void Dispose()
