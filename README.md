@@ -1,5 +1,10 @@
 ![Logo](coinbase-logo-alt.png)
-# Coinbase Pro websocket API client [![Build Status](https://travis-ci.org/Marfusios/coinbase-client-websocket.svg?branch=master)](https://travis-ci.org/Marfusios/coinbase-client-websocket) [![NuGet version](https://badge.fury.io/nu/Coinbase.Client.Websocket.svg)](https://badge.fury.io/nu/Coinbase.Client.Websocket)
+# Coinbase Pro websocket API client 
+
+[![NuGet version](https://img.shields.io/nuget/v/Coinbase.Client.Websocket?style=flat-square)](https://www.nuget.org/packages/Coinbase.Client.Websocket)
+[![Nuget downloads](https://img.shields.io/nuget/dt/Coinbase.Client.Websocket?style=flat-square)](https://www.nuget.org/packages/Coinbase.Client.Websocket)
+[![CI build](https://img.shields.io/github/check-runs/marfusios/coinbase-client-websocket/master?style=flat-square&label=build)](https://github.com/Marfusios/coinbase-client-websocket/actions/workflows/dotnet-core.yml)
+
 
 This is a C# implementation of the Coinbase Pro websocket API found here:
 

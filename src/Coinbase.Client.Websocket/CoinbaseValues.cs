@@ -10,11 +10,11 @@ namespace Coinbase.Client.Websocket
         /// <summary>
         /// Main Coinbase Pro url to websocket API
         /// </summary>
-        public static readonly Uri ApiWebsocketUrl = new Uri("wss://ws-feed.pro.coinbase.com");
+        public static readonly Uri ApiWebsocketUrl = new Uri("wss://ws-feed.exchange.coinbase.com");
 
         /// <summary>
         /// Sandbox Coinbase Pro url to websocket API
         /// </summary>
-        public static readonly Uri ApiWebsocketSandboxUrl = new Uri("wss://ws-feed-public.sandbox.pro.coinbase.com");
+        public static readonly Uri ApiWebsocketSandboxUrl = new Uri("wss://ws-feed-public.sandbox.exchange.coinbase.com");
     }
 }
