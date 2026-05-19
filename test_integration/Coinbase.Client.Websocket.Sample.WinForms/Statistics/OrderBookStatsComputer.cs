@@ -1,41 +1,42 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
-using Bitmex.Client.Websocket.Responses;
-using Bitmex.Client.Websocket.Responses.Books;
+using Coinbase.Client.Websocket.Responses.Books;
 
-namespace Bitmex.Client.Websocket.Sample.WinForms.Statistics
+namespace Coinbase.Client.Websocket.Sample.WinForms.Statistics
 {
-    class OrderBookStatsComputer
+    internal class OrderBookStatsComputer
     {
-        private readonly Dictionary<long, BookLevel> _bids = new Dictionary<long, BookLevel>();
-        private readonly Dictionary<long, BookLevel> _asks = new Dictionary<long, BookLevel>();
+        private readonly Dictionary<double, OrderBookLevel> _bids = new Dictionary<double, OrderBookLevel>();
+        private readonly Dictionary<double, OrderBookLevel> _asks = new Dictionary<double, OrderBookLevel>();
 
-
-        public void HandleOrderBook(BookResponse response)
+        public void HandleSnapshot(OrderBookSnapshotResponse response)
         {
-            if (response.Action == BitmexAction.Delete)
+            _bids.Clear();
+            _asks.Clear();
+
+            foreach (var bid in response.Bids ?? new OrderBookLevel[0])
             {
-                foreach (var bookLevel in response.Data)
-                {
-                    RemoveBook(bookLevel);
-                }
+                _bids[bid.Price] = bid;
             }
 
-            if (response.Action == BitmexAction.Insert ||
-                response.Action == BitmexAction.Partial)
+            foreach (var ask in response.Asks ?? new OrderBookLevel[0])
             {
-                foreach (var bookLevel in response.Data)
-                {
-                    InsertNewBook(bookLevel);
-                }
+                _asks[ask.Price] = ask;
             }
+        }
 
-            if (response.Action == BitmexAction.Update)
+        public void HandleUpdate(OrderBookUpdateResponse response)
+        {
+            foreach (var level in response.Changes ?? new OrderBookLevel[0])
             {
-                foreach (var bookLevel in response.Data)
+                var levels = level.Side == OrderBookSide.Buy ? _bids : _asks;
+                if (level.Amount <= 0)
                 {
-                    UpdateBook(bookLevel);
+                    levels.Remove(level.Price);
+                    continue;
                 }
+
+                levels[level.Price] = level;
             }
         }
 
@@ -44,70 +45,28 @@ namespace Bitmex.Client.Websocket.Sample.WinForms.Statistics
             var bids = _bids.OrderByDescending(x => x.Value.Price).ToArray();
             var asks = _asks.OrderBy(x => x.Value.Price).ToArray();
 
-            if(!bids.Any() || !asks.Any())
+            if (!bids.Any() || !asks.Any())
                 return OrderBookStats.NULL;
 
-            var bidAmounts = bids.Take(20).Sum(x => x.Value.Size) ?? 1;
-            var askAmounts = asks.Take(20).Sum(x => x.Value.Size) ?? 1;
-
-            var total = bidAmounts + askAmounts + 0.0;
-
-            var bidsPerc = bidAmounts / total * 100;
-            var asksPerc = askAmounts / total * 100;
+            var bidAmounts = bids.Take(20).Sum(x => x.Value.Amount * x.Value.Price);
+            var askAmounts = asks.Take(20).Sum(x => x.Value.Amount * x.Value.Price);
+            var total = bidAmounts + askAmounts;
 
             return new OrderBookStats(
-                bids[0].Value.Price ?? 0,
-                asks[0].Value.Price ?? 0,
-                bidsPerc,
-                asksPerc,
+                bids[0].Value.Price,
+                asks[0].Value.Price,
+                bidAmounts / total * 100,
+                askAmounts / total * 100,
                 bidAmounts,
-                askAmounts
-                );
-        }
-
-        private void InsertNewBook(BookLevel book)
-        {
-            var id = book.Id;
-
-            if (book.Side == BitmexSide.Buy)
-            {
-                _bids[id] = book;
-                return;
-            }
-
-            _asks[id] = book;
-        }
-
-        private void RemoveBook(BookLevel book)
-        {
-            var id = book.Id;
-            if (_bids.ContainsKey(id))
-                _bids.Remove(id);
-            if (_asks.ContainsKey(id))
-                _asks.Remove(id);
-        }
-
-        private void UpdateBook(BookLevel book)
-        {
-            var id = book.Id;
-            BookLevel found = null;
-            if (_bids.ContainsKey(id))
-                found = _bids[id];
-            if (_asks.ContainsKey(id))
-                found = _asks[id];
-
-            if (found == null)
-                return;
-
-            found.Size = book.Size;
+                askAmounts);
         }
     }
 
-    class OrderBookStats
+    internal class OrderBookStats
     {
         public static readonly OrderBookStats NULL = new OrderBookStats(0, 0, 0, 0, 0, 0);
 
-        public OrderBookStats(double bid, double ask, double bidAmountPerc, double askAmountPerc, 
+        public OrderBookStats(double bid, double ask, double bidAmountPerc, double askAmountPerc,
             double bidAmount, double askAmount)
         {
             Bid = bid;
@@ -119,12 +78,15 @@ namespace Bitmex.Client.Websocket.Sample.WinForms.Statistics
         }
 
         public double Bid { get; }
+
         public double Ask { get; }
 
         public double BidAmountPerc { get; }
+
         public double AskAmountPerc { get; }
 
         public double BidAmount { get; }
+
         public double AskAmount { get; }
     }
 }

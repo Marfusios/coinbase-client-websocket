@@ -21,9 +21,6 @@ namespace Coinbase.Client.Websocket.Sample
     {
         private static readonly ManualResetEvent ExitEvent = new ManualResetEvent(false);
 
-        private static readonly string ApiKey = "your api key";
-        private static readonly string ApiSecret = "";
-
         static void Main(string[] args)
         {
             var logger = InitLogging();

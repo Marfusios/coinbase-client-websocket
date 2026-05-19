@@ -1,4 +1,4 @@
-﻿namespace Bitmex.Client.Websocket.Sample.WinForms.Views
+namespace Coinbase.Client.Websocket.Sample.WinForms.Views
 {
     partial class Form1
     {
@@ -194,7 +194,7 @@
             this.tbPair.Name = "tbPair";
             this.tbPair.Size = new System.Drawing.Size(94, 22);
             this.tbPair.TabIndex = 6;
-            this.tbPair.Text = "XBTUSD";
+            this.tbPair.Text = "BTC-USD";
             this.tbPair.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // btnStop
@@ -520,7 +520,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "BitMEX Client";
+            this.Text = "Coinbase Client";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();

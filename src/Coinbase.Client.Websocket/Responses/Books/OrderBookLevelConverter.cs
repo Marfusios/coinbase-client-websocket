@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -41,14 +39,14 @@ namespace Coinbase.Client.Websocket.Responses.Books
 
         private OrderBookLevel[] JArrayToTradingTicker(JArray data)
         {
-            var result = new List<OrderBookLevel>();
-            foreach (var item in data)
+            var result = new OrderBookLevel[data.Count];
+            for (var i = 0; i < data.Count; i++)
             {
-                var array = item.ToArray();
+                var array = (JArray)data[i];
 
                 var level = new OrderBookLevel();
 
-                if (array.Length == 2)
+                if (array.Count == 2)
                 {
                     level.Side = _side;
                     level.Price = (double) array[0];
@@ -63,10 +61,10 @@ namespace Coinbase.Client.Websocket.Responses.Books
                     level.Amount = (double) array[2];
                 }
 
-                result.Add(level);
+                result[i] = level;
             }
 
-            return result.ToArray();
+            return result;
         }
     }
 }

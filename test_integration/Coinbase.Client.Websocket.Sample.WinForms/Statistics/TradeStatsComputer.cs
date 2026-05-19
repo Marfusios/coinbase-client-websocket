@@ -1,18 +1,17 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bitmex.Client.Websocket.Responses;
-using Bitmex.Client.Websocket.Responses.Trades;
+using Coinbase.Client.Websocket.Responses.Trades;
 
-namespace Bitmex.Client.Websocket.Sample.WinForms.Statistics
+namespace Coinbase.Client.Websocket.Sample.WinForms.Statistics
 {
-    class TradeStatsComputer
+    internal class TradeStatsComputer
     {
-        private readonly List<Trade> _lastTrades = new List<Trade>();
+        private readonly List<TimedTrade> _lastTrades = new List<TimedTrade>();
 
-        public void HandleTrade(Trade newTrade)
+        public void HandleTrade(TradeResponse newTrade)
         {
-            _lastTrades.Add(newTrade);
+            _lastTrades.Add(new TimedTrade(DateTime.UtcNow, newTrade));
         }
 
         public TradeStats GetStatsFor(int minutes)
@@ -20,31 +19,31 @@ namespace Bitmex.Client.Websocket.Sample.WinForms.Statistics
             var timeLimit = DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(minutes));
             var trades = _lastTrades.Where(x => x.Timestamp >= timeLimit).ToArray();
 
-            var buys = trades.Where(x => x.Side == BitmexSide.Buy).Sum(x => x.Size);
-            var sells = trades.Where(x => x.Side == BitmexSide.Sell).Sum(x => x.Size);
+            var buys = trades.Where(x => x.Trade.TradeSide == TradeSide.Buy).Sum(x => x.Trade.Size);
+            var sells = trades.Where(x => x.Trade.TradeSide == TradeSide.Sell).Sum(x => x.Trade.Size);
 
-            if(buys <= 0 && sells <= 0)
+            if (buys <= 0 && sells <= 0)
                 return TradeStats.NULL;
 
-            //var relative = (buys - sells - 0.0) / (buys + sells + 0.0);
-            //var relativePerc = relative * 100;
+            var total = buys + sells;
+            return new TradeStats(buys / total * 100, sells / total * 100, trades.Length);
+        }
 
-            //var buysPerc = relative >= 0 ? relativePerc : 100 + relativePerc;
-            //var sellsPerc = relative <= 0 ? Math.Abs(relativePerc) : 100 - relativePerc;
+        private class TimedTrade
+        {
+            public TimedTrade(DateTime timestamp, TradeResponse trade)
+            {
+                Timestamp = timestamp;
+                Trade = trade;
+            }
 
-            var total = buys + sells + 0.0;
+            public DateTime Timestamp { get; }
 
-            var buysPerc = buys / total * 100;
-            var sellsPerc = sells / total * 100;
-
-            var count = trades.Length;
-
-            return new TradeStats(buysPerc, sellsPerc, count);
+            public TradeResponse Trade { get; }
         }
     }
 
-
-    class TradeStats
+    internal class TradeStats
     {
         public static readonly TradeStats NULL = new TradeStats(0, 0, 0);
 
@@ -56,9 +55,9 @@ namespace Bitmex.Client.Websocket.Sample.WinForms.Statistics
         }
 
         public double BuysPerc { get; }
+
         public double SellsPerc { get; }
 
         public int TotalCount { get; }
     }
-
 }

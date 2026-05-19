@@ -12,9 +12,6 @@ namespace Coinbase.Client.Websocket.Tests.Integration
 {
     public class CoinbaseWebsocketClientTests
     {
-        private static readonly string API_KEY = "your_api_key";
-        private static readonly string API_SECRET = "";
-
         [Fact]
         public async Task Heartbeat()
         {
